@@ -1,0 +1,24 @@
+{
+  "row": [
+    {
+      "col": [
+        {
+          "controller": "textbox",
+          "placeholder": "username"
+        },
+        {
+          "controller": "textbox",
+          "placeholder": "password"
+        }
+      ]
+    },
+    {
+      "col": [
+        {
+          "controller": "button",
+          "placeholder": "Login"
+        }
+      ]
+    }
+  ]
+}
