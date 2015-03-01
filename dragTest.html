@@ -8,64 +8,118 @@
 
         <!-- Bootstrap CSS -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-
+        <link href="assets/css/pprls.css" rel="stylesheet" type="text/css">
         <script src="assets/js/jquery-2.1.3.min.js"></script>
     </head>
     <body>
         <div class="container-fluid text-center">
+            <div class="col-sm-4 form">
+                <br/>
+                <legend>TextBoxes</legend>
+                <div id="textbox" class="form-group" draggable="true" ondragstart="dragStart(event)">
+                    <label>Label</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div id="textboxAddonBefore" class="form-group" draggable="true" ondragstart="dragStart(event)">
+                    <div class="input-group">
+                        <label class="input-group-addon">Label</label>
+                        <input class="form-control disabled" type="text">                        
+                    </div>
+                </div>
+                <div id="textboxAddonAfter" class="form-group" draggable="true" ondragstart="dragStart(event)">
+                    <div class="input-group">
+                        <input class="form-control" type="text">                        
+                        <label class="input-group-addon disabled">Label</label>
+                    </div>
+                </div
+                <legend>CheckBox</legend>
+                <div id="checkbox" class="form-group" draggable="true" ondragstart="dragStart(event)">
+                    <input type="checkbox" value="1"> <label>checkbox</label>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading" >
+                        Drag stuff into this
+                    </div>
+                    <div class="panel-body" ondragenter='return dragEnter(event)' ondrop='return dragDrop(event)' ondragover='return dragOver(event)' ondragleave='dragLeave'>
+                        <div id="pprls_form">
+                            
+                        </div>
+                        <div class="text-right">
+                            <!-- <a class="btn btn-primary btn-sm" id="addRow" onclick="pprls_AddRow()">Add Row</a> -->
+                        </div>
+                    </div>
+<!--                     <div id="DropPoint" class="panel-body" ondragenter="return dragEnter(event)" ondrop="return dragDrop(event)" ondragover="return dragOver(event)">
+                        
+                    </div>
+ -->            </div>                
+            </div>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="col-xs-3">
-                        <div id="ctrl1" class="form-group" draggable="true" ondragstart="dragStart(event)">
-                            <label>Label</label>
-                            <input type="text" class="form-control">
-                        </div>
                     </div>
                 </div>
                 <div class="col-xs-4">
-                    <div id="DropPoint" class="panel panel-primary">
-                        <div class="panel-heading">
-                            Drag stuff into this
-                        </div>
-                        <div class="panel-body" ondragenter="return dragEnter(event)" ondrop="return dragDrop(event)" ondragover="return dragOver(event)">
-                            
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- jQuery -->
         <script type="text/javascript">
-            function dragStart(ev) {
-               console.log(ev);
-               ev.dataTransfer.effectAllowed = 'move';
+            var count, row_count, tempObj; 
+            $(document).ready(init = function() {
+                count = 0;
+                row_count = 0;
+            });
+
+            pprls_AddRow = function(){
+            }
+
+            dragStart = function (ev) {
+               // console.log(ev);
+               ev.dataTransfer.effectAllowed = 'copyMove';
                ev.dataTransfer.setData("Text/html", ev.target.getAttribute('id'));
                ev.dataTransfer.setDragImage(ev.target,100,100);
 
                return true;
             }
 
-            function dragEnter(ev){
-                $('.panel').removeClass('panel-primary');
-                $('.panel').addClass('panel-info');
-                ev.preventDefault();
-                console.log(ev);
+            dragEnter = function(ev){
+
+                //ev.target.childNode[0].;
+
+                return true;
+            }
+            dragLeave = function(ev){
+                $(tempObj).css({
+                    opacity: '1'
+                });
+                //ev.target.childNode[0].;
+
                 return true;
             }
 
-            function dragOver(ev){
-                $('.panel').removeClass('panel-info');
-                $('.panel').addClass('panel-danger');
+            dragOver = function(ev){
                 ev.preventDefault();                                
             }
-            function dragDrop(ev) {
+
+            dragDrop = function(ev) {
                 var data = ev.dataTransfer.getData("Text/html");
-                console.log(document.getElementById(data));
-                ev.target.appendChild(document.getElementById(data));
-                ev.stopPropagation();
+                var nodeCopy = document.getElementById(data).cloneNode(true);
+                var container = ev.target;
+
+                console.log(ev.target)
+
+                // if(rowCheck(ev.target.className))
+                // {
+                    nodeCopy.id += ++count;
+                    // console.log(document.getElementById(data));
+                    container.appendChild(nodeCopy);
+                    ev.stopPropagation();
+                // }
                 return false;
-             }
+            }
+
         // var jsontext = '{"row":[{"col":[{"controller":"textbox","placeholder":"username"},{"controller":"textbox","placeholder":"password"}]},{"col":[{"controller":"button","placeholder":"Login"}]}]}';
         // var JsonObj = JSON.parse(jsontext);
         // console.log(JsonObj);

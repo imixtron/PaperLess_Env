@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Title Page</title>
+
+        <!-- Bootstrap CSS -->
+        <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+        <link href="assets/css/pprls.css" rel="stylesheet" type="text/css">
+        <script src="assets/js/jquery-2.1.3.min.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid text-center">
+            <div class="col-sm-4">
+                <div>
+                    <br/>
+                    <legend>TextBoxes</legend>
+                    <div id="TextBoxLeft" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <div id="lbl-before" class="input-group">
+                            <label class="input-group-addon">Label</label>
+                            <input class="form-control disabled" type="text" disabled="disabled" placeholder="palaceholder">
+                        </div>
+                    </div>
+                    <div id="TextBoxRight" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <div id="lbl-after" class="input-group">
+                            <input class="form-control" type="text" disabled="disabled" placeholder="palaceholder">
+                            <label class="input-group-addon disabled">Label</label>
+                        </div>
+                    </div>
+                    <div id="TextArea" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <label>Text Area</label>
+                        <TextArea class="form-control" placeholder="placeholder" disabled="disabled" ></TextArea>
+                    </div>
+                    <legend>CheckBox</legend>
+                    <div id="CheckBox" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <input type="checkbox" value="1"disabled="disabled" > <label>checkbox</label>
+                    </div>
+                    <legend>TextBased</legend>
+                    <div id="Paragraph" class="alert alert-info" draggable="true" ondragstart="CR   dragStart(event)">
+                        <input type="checkbox" value="1"disabled="disabled" > <label>checkbox</label>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Drag and Drop controls to add in the form
+                    </div>
+                    <div class="panel-body">
+                        <div id="DropZone" class="panel panel-default" ondragenter='return CRdragEnter(event)' ondrop='return CRdragDrop(event)' ondragover='return CRdragOver(event)' ondragleave='CRdragLeave(event)'>
+                            
+                        </div>
+                        <div id="pprlsForm">
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-3">
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="assets/js/FormBuilder.js">
+        // var jsontext = '{"row":[{"col":[{"controller":"textbox","placeholder":"username"},{"controller":"textbox","placeholder":"password"}]},{"col":[{"controller":"button","placeholder":"Login"}]}]}';
+        // var JsonObj = JSON.parse(jsontext);
+        // console.log(JsonObj);
+        // console.log(jsontext);
+        </script>
+        <!-- Bootstrap JavaScript -->
+        <script src="assets/js/bootstrap.min.js"></script>
+    </body>
+</html>
