@@ -1,5 +1,8 @@
 /*   PPRLS.CSS   */
 
+#controlContainer .alert{
+	min-width: 220px;
+}
 #pprlsForm > div:after{
 	content: " ";
 	clear: both;
