@@ -1,5 +1,17 @@
 /*   PPRLS.CSS   */
-
+.controls #controlContainer{
+	height: 100vh;
+	overflow-y: auto;
+}
+#controlContainer{
+	padding: 0 25px ;
+}
+#modal-properties tr td{
+	vertical-align: middle;
+}
+#modal-properties tr:last-child td{
+	vertical-align: top;
+}
 #controlContainer .alert{
 	min-width: 220px;
 }

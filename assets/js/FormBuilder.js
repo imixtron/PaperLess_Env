@@ -59,7 +59,7 @@ touchInit = function(){
 		}, false);
 		
 		item.addEventListener("touchmove", handleMove = function(ev){
-			console.log("Tmove");
+			// console.log("Tmove");
 			touch = event.targetTouches[0];
 
 			ex = touch.pageX;
@@ -141,7 +141,9 @@ CRdragDrop = function(ev) {
 	var data = ev.dataTransfer.getData("Text/html");
 	var nodeCopy = document.getElementById(data).cloneNode(true);
 
-	console.log(nodeCopy);
+	// var uId  = generateId(data);
+	$(nodeCopy).data('uId', generateId(data.id));
+	console.log($(nodeCopy).data('uId'));
 
 	InsertIntoForm(nodeCopy);
 
@@ -162,10 +164,8 @@ InsertIntoForm = function(nodeCopy){
 // Other Functions:
 setProperties = function(nodeCopy){
 	var data = nodeCopy.id;
-	var uId  = generateId(data);
-
-	console.log(controlProperties[uId]);
-    if (controlProperties[uId]==undefined) //Init for the new control
+	uId = $(nodeCopy).data('uId')
+    if (controlProperties[uId]==null) //Init for the new control
     {
 	    //Adding our controls properties to the object
 	    controlProperties[uId] = {
@@ -177,39 +177,159 @@ setProperties = function(nodeCopy){
 	    	cssClass : "form-group",
 	    	width : "col-xs-6",
 	    	values :[{
-	    		name : "dipsy",
-	    		value : "lala"
-	    	},
-	    	{
-	    		name : "po",
-	    		value : "dipsylala"
+	    		name: uId,
+	    		value: "value11"
 	    	}]
 	    }
 	    popProperties(nodeCopy,uId);
-	    return DataAttribs(nodeCopy,uId);
+	    return remDataAttribs(nodeCopy,uId);
 	}
 
 	popProperties(nodeCopy,uId);
-	return DataAttribs(nodeCopy,uId);
+	return remDataAttribs(nodeCopy,uId);
 
 }
 
 popProperties = function(nodeCopy, uId){
+	$("#modal-properties").modal("show");
 	console.log(controlProperties[uId]);
 	var pObj = controlProperties[uId];
+
 	var tblInner = 
-	"<tr><td>"+
+	"<tr>"+
+		"<td>Control ID: </td>"+
+		"<td>"+
+			pObj._uid+
+		"</td>"+
+	"</tr>"+
+	"<tr>"+
+		"<td>Control Type: </td>"+
+		"<td>"+
+			analyzeProperties.type(pObj.type)+
+		"</td>"+
+	"</tr>"+
+	"<tr>"+
+		"<td>Data Type: </td>"+
+		"<td>"+
+			analyzeProperties.dataType(pObj.type,pObj.dataType)+
+		"</td>"+
+	"</tr>"+
+	"<tr>"+
+		"<td>Label: </td>"+
+		"<td>"+
+			analyzeProperties.label(pObj.type,pObj.label)+
+		"</td>"+
+	"</tr>"+
+	"<tr>"+
+		"<td>Placeholder: </td>"+
+		"<td>"+
+			analyzeProperties.placeholder(pObj.type,pObj.placeholder)+
+		"</td>"+
+	"</tr>"+
+	"<tr>"+
+		"<td>Control width: </td>"+
+		"<td>"+
+			analyzeProperties.width(pObj.type,pObj.width)+
+		"</td>"+
+	"</tr>"+
+	"<tr>"+
+		"<td>Values: </td>"+
+		"<td id='multiVal'>"+
+			analyzeProperties.value(pObj.type,pObj.values.length,pObj._uid)+
+		"</td>"+
+	"</tr>";
 
-	"</td></td>"
-
-	var tempHtml = "lal lalalal";
 
 	// $("#modal-properties #pprlsProperties").html(tempHtml);
-	$("#modal-properties table").html("<small>properties: "+uId);
-	$("#modal-properties").modal("show");
+	$("#modal-properties table").html(tblInner);
+	checkVal(uId);
 }
 
-DataAttribs = function(nodeCopy, uId){
+analyzeProperties = {
+	type : function(type){
+		return "type";
+	},
+	dataType : function(type,dataType){
+		var temp;
+		switch(type){
+			case "TextBoxRight":
+			case "TextBoxLeft":
+					temp = "<select class='form-control'>"+
+								"<option>Select one</option>"+
+								"<option value='1'>Text</option>"+
+								"<option value='2'>Email</option>"+
+								"<option value='3'>Number</option>"+
+								"<option value='4'>Date</option>"+
+						   "</select>";
+						   break;
+			case "TextArea":
+			case "CheckBox":
+			case "Paragraph":
+		}
+		return temp;
+	},
+	label : function(type,label){
+		if (label==null)
+			label = "label";
+		return "<input id='pprlPropLabel' class='form-control' value='"+label+"'/>";
+	},
+	placeholder : function(type,placeholder){
+		if (placeholder==null)
+			placeholder = "placeholder";
+		return "<input id='pprlPropPlaceholder' class='form-control' value='"+placeholder+"'/>";
+	},
+	width : function(type,width){
+		temp = "<select class='form-control'>"+
+					"<option>Select one</option>"+
+					"<option value='0.25'>Quarter</option>"+
+					"<option value='0.5'>Half</option>"+
+					"<option value='1'>Full</option>"+
+			   "</select>";
+		return temp;
+	},
+	value: function(type,length,uId){
+		console.log(type);
+		switch(type){
+			case "TextBoxRight":
+			case "TextBoxLeft":
+			case "TextArea":
+			case "Paragraph":
+				break;
+			case "RadioButton":
+			case "Dropdown":
+			case "CheckBox":
+				button = "<button onclick=\"addValTb('"+uId+"',null)\" class='pull-right btn btn-xs btn-success'><i class='glyphicon glyphicon-plus-sign'></i></button>";
+				return button;
+				break;
+			default:
+				break;
+		}
+	}
+}
+checkVal = function(uId){
+	var dataObj = controlProperties[uId];
+	var valHtml = null;
+	console.log(dataObj.values.length);
+	
+	for (var i = 0; i < dataObj.values.length; i++) {
+		addValTb(uId,dataObj.values[i].value);
+	};
+		 /* iterate through array or object */
+}
+
+addValTb = function(uId,value){
+	valTb = document.createElement("input");
+
+	valTb.setAttribute("class", "form-control");
+	valTb.setAttribute("type", "text");
+	valTb.setAttribute("name", uId);
+	valTb.setAttribute("placeholder", "Text for "+uId);
+	valTb.setAttribute("value", value);
+
+	$("#multiVal").append(valTb);
+}
+
+remDataAttribs = function(nodeCopy, uId){
 	var nc = $(nodeCopy);
 
 	nc.data("uid", uId);
@@ -266,6 +386,7 @@ generateId = function(dataObj){
 
 	for( var i=0; i < 3; i++ )
 		genItrator += possible.charAt(Math.floor(Math.random() * possible.length));
+	console.log("Generated: "+genItrator);
 	return genItrator;
 }
 

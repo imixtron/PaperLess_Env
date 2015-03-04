@@ -13,8 +13,8 @@
     </head>
     <body onload="touchInit()">
         <div class="container-fluid text-center">
-            <div class="col-sm-4">
-                <div id="controlContainer">
+            <div class="col-sm-4 controls">
+                <div id="controlContainer" class="row">
                     <br/>
                     <legend>TextBoxes</legend>
                     <div id="TextBoxLeft" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
@@ -33,13 +33,27 @@
                         <label>Text Area</label>
                         <TextArea class="form-control" placeholder="placeholder" disabled="disabled" ></TextArea>
                     </div>
+                    <div id="Dropdown" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <label>Text Area</label>
+                        <select class="form-control" disabled="disabled">
+                            <option>Value</option>
+                        </select>
+                    </div>
                     <legend>CheckBox</legend>
                     <div id="CheckBox" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
-                        <input type="checkbox" value="1"disabled="disabled" > <label>checkbox</label>
+                        <input type="checkbox" value="1" disabled="disabled" > <label>checkbox</label>
+                    </div>
+                    <div id="RadioButton" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <input type="radio" value="1" disabled="disabled" > <label>checkbox</label>
                     </div>
                     <legend>TextBased</legend>
-                    <div id="Paragraph" class="alert alert-info" draggable="true" ondragstart="CR   dragStart(event)">
-                        <input type="checkbox" value="1"disabled="disabled" > <label>checkbox</label>
+                    <div id="Paragraph" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.    </p>
                     </div>
                     <div class="clearfix"></div>
                 </div>
