@@ -284,10 +284,10 @@ analyzeProperties = {
 			case "TextBoxLeft":
 					temp = "<select class='form-control'>"+
 								"<option>Select one</option>"+
-								"<option value='1'>Text</option>"+
-								"<option value='2'>Email</option>"+
-								"<option value='3'>Number</option>"+
-								"<option value='4'>Date</option>"+
+								"<option value='text'>Text</option>"+
+								"<option value='email'>Email</option>"+
+								"<option value='number'>Number</option>"+
+								"<option value='date'>Date</option>"+
 						   "</select>";
 						   break;
 			case "TextArea":
@@ -346,6 +346,7 @@ analyzeProperties = {
 }
 
 deleteControl = function(uId){
+
 	child   = document.getElementById(uId);
 	parent  = getParentNode(child,false);
 	console.log(child);
@@ -359,7 +360,23 @@ deleteControl = function(uId){
 
 }
 
-svControl = function(nodeCopy){
+saveControl = function(uId){
+
+	$("#modal-properties").modal("show");
+	// console.log(controlProperties[uId]);
+
+	var pObj = controlProperties[uId];
+
+	pObj.required 		= ($("#_required input")[0].checked) ? true : false;
+	pObj.dataType 		= $("#_dataType select")[0].selectedOptions[0].value;
+	pObj.label 			= $("#_label input")[0].value;
+	pObj.placeholder 	= $("#_placeholder input")[0].value;
+	pObj.width 			= $("#_width select")[0].selectedOptions[0].value;
+
+//	$("#_value").html(analyzeProperties.value(pObj.type,pObj.values.length,pObj._uid));
+
+	// console.log(pObj);
+
 
 }
 
