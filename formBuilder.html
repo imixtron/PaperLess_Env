@@ -31,12 +31,12 @@
                     </div>
                     <div id="TextArea" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
                         <div>
-                            <label class="label" data-node-type="control">Text Area</label>
+                            <span class="h5 pull-left" class="label" data-node-type="control">Text Area</span>
                             <TextArea class="form-control" placeholder="placeholder" disabled="disabled" data-node-type="control"></TextArea>                            
                         </div>
                     </div>
-                    <div id="Dropdown" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
-                        <div>
+                    <div id="Dropdown" class="alert alert-info form-inline form-group" draggable="true" ondragstart="CRdragStart(event)">
+                        <div class="form-group">
                             <label class="label" data-node-type="control">Text Area</label>
                             <select class="form-control" disabled="disabled" data-node-type="control">
                                 <option>Value</option>
@@ -74,13 +74,13 @@
                         <div id="DropZone" class="panel panel-default" ondragenter='return CRdragEnter(event)' ondrop='return CRdragDrop(event)' ondragover='return CRdragOver(event)' ondragleave='CRdragLeave(event)'>
                             
                         </div>
-                        <div id="pprlsForm">
+                        <div id="pprlsForm" >
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="modal fade" id="modal-properties">
+            <div class="modal fade" id="modal-properties" data-backdrop="static" data-keyboard="false" >
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -105,27 +105,25 @@
                                     <tr>
                                         <td>Data Type: </td>
                                         <td id="_dataType">
-                                            404: Not Found
+                                            404: Something Went terribly Wrong
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Label: </td>
                                         <td id="_label">
-                                            <input id="pprlPropLabel" class="form-control" value="label">
+                                            <input class="form-control" value="label">
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Placeholder: </td>
                                         <td id="_placeholder">
-                                            <input id="pprlPropPlaceholder" class="form-control" value="placeholder">
+                                            <input class="form-control" value="placeholder">
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Control width: </td>
                                         <td id="_width">
                                             <select id="wid" class="form-control">
-                                                <option>Select one</option>
-                                                <option value="3">Quarter</option>
                                                 <option value="6">Half</option>
                                                 <option value="12">Full</option>
                                             </select>
@@ -134,22 +132,28 @@
                                     <tr>
                                         <td id="_valueName">Default Value(s): </td>
                                         <td id="_value">
-                                            <input class="form-control" type="text" name="3kh" placeholder="Text for 3kh" value="value 1">
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button id="_closeModal" type="button" class="btn btn-default">Close</button>
                             <button id="_delControl" type="button" class="btn btn-danger">Delete</button>
-                            <button id="_svControl" type="button" class="btn btn-primary">Save changes</button>
+                            <button id="_svControl"  type="button" class="btn btn-primary">Save changes</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
             </div><!-- /.modal -->
         </div>
-        <script type="text/javascript" src="assets/js/FormBuilder.js">
+
+        <script type="text/javascript" src="assets/js/FormBuilder.js"></script>
+        <script>
+          $(function() {
+            $( "#pprlsForm" ).sortable();
+            $( "#pprlsForm" ).disableSelection();
+          });
+        </script>
         // var jsontext = '{"row":[{"col":[{"controller":"textbox","placeholder":"username"},{"controller":"textbox","placeholder":"password"}]},{"col":[{"controller":"button","placeholder":"Login"}]}]}';
         // var JsonObj = JSON.parse(jsontext);
         // console.log(JsonObj);
@@ -157,5 +161,6 @@
         </script>
         <!-- Bootstrap JavaScript -->
         <script src="assets/js/bootstrap.min.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     </body>
 </html>
