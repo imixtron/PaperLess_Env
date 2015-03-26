@@ -44,7 +44,7 @@
                             </select>                    
                         </div>
                     </div>
-                    <legend>CheckBox</legend>
+                    <legend>CheckBox & Radio</legend>
                     <div id="CheckBox" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
                         <div class="checkbox">
                             <label>
@@ -57,16 +57,28 @@
                         <div class="radio">
                             <label>
                                 <input type="radio" value="1" disabled="disabled" data-node-type="control">  
-                                Checkbox
+                                radio
                             </label>
                         </div>
                     </div>
                     <legend>TextBased</legend>
-                    <div id="Paragraph" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                    <div id="ParagraphHigh" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
                         <div>
                             <p class="lead" data-node-type="control">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                             tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco </p> 
+                        </div>
+                    </div>
+                    <div id="Paragraph" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <div>
+                            <p class="p" data-node-type="control">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                             quis nostrud exercitation ullamco </p>                            
+                        </div>
+                    </div>
+                    <div id="Heading" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                        <div>
+                            <h3 data-node-type="control">Heading 101</h3>
                         </div>
                     </div>
                     <div class="clearfix"></div>
@@ -76,8 +88,8 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <div class="col-xs-3">
-                            <button class="btn btn-info text-left" onclick="pprlsInit()" data-toggle="tooltip" data-placement="bottom" title="Reset"><i class="glyphicon glyphicon-repeat" title="reset"></i></button>
-                            <button class="btn btn-info">Publish</button>
+                            <button class="btn btn-info text-left" onclick="confirm('are you sure',false) ? pprlsInit() : console.log('')" data-toggle="tooltip" data-placement="bottom" title="Reset"><i class="glyphicon glyphicon-repeat" title="reset"></i></button>
+                            <button class="btn btn-info" onclick="generateFrm('compile')">Publish</button>
                         </div>
                         <div class="col-xs-9">Drag and Drop controls to add in the form</div>
                         <div class="clearfix"></div>
@@ -96,7 +108,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button id="_closeModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button id="_close" type="button" class="close">&times;</button>
                             <h4 class="modal-title"><small>Properties:</small></h4>
                         </div>
                         <div class="modal-body" id="pprlsProperties">
@@ -153,9 +165,9 @@
                             </table>
                         </div>
                         <div class="modal-footer">
-                            <button id="_closeModal" type="button" class="btn btn-default">Close</button>
                             <button id="_delControl" type="button" class="btn btn-danger">Delete</button>
-                            <button id="_svControl"  type="button" class="btn btn-primary">Save changes</button>
+                            <button id="_updateControl"  type="button" class="btn btn-primary">Update</button>
+                            <button id="_svControl" type="button" class="btn btn-success">Save</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->

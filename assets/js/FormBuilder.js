@@ -24,9 +24,11 @@ checkTouchClasses = function(node){
 	  ||$(node).hasClass('form-control')
 	  ||$(node).hasClass('label')
 	  ||$(node).hasClass('lead')
-	  ||$(node).hasClass('input-group'))
+	  ||$(node).hasClass('input-group')
+	  ||$(node).hasClass('p')
+	  ||$(node).hasClass('h3'))
 		return true;
-		return false;
+	  return false;
 }
 
 getParentNode = function(node,chkClasses){
@@ -241,7 +243,7 @@ popProperties = function(nodeCopy, uId, newRun){
 	if (newRun==false)
 		analyzeProperties.displayControl(document.getElementById(uId));
 	else
-		analyzeProperties.displayControl(null);
+		return;
 }
 
 remDataAttribs = function(nodeCopy, uId){
@@ -263,7 +265,8 @@ remDataAttribs = function(nodeCopy, uId){
 	nc.attr("id", uId);
 	nc.attr('onclick', 'setProperties(this)');
 
-	$("#_closeModal").attr('onclick', "saveControl('"+uId+"')");
+	$("#_close").attr('onclick', "validate('"+uId+"',true)");
+	$("#_updateControl").attr('onclick', "saveControl('"+uId+"',false)");
 	$("#_delControl").attr('onclick', "deleteControl('"+uId+"')");
 	$("#_svControl").attr('onclick', "saveControl('"+uId+"')");
 
@@ -274,8 +277,25 @@ analyzeProperties = {
 	displayControl  : function(node){
 		console.log(node);
 		document.getElementById('controlDisplay').innerHTML = "";
-		if (node != null)
-		document.getElementById('controlDisplay').appendChild(node.cloneNode(true));
+		if (node == null)
+			return;
+		document.getElementById('controlDisplay').appendChild( analyzeProperties.refreshNode(node) );
+	},
+	refreshNode : function(node){
+		nodeClone = node.cloneNode(true);
+		nodeClone.removeAttribute("onclick");
+		nodeClone.id = "demo-control";
+		nodeClone.classList.remove('col-xs-6');
+		nodeClone.classList.add('col-xs-12');
+		inputArr = nodeClone.querySelectorAll("input");
+		if (inputArr.length<1) 
+			inputArr = nodeClone.querySelectorAll("textarea");
+
+		for (var i = 0; i < inputArr.length; i++) {
+			inputArr[i].removeAttribute('disabled');
+		};
+		console.log(nodeClone);
+		return nodeClone;
 	},
 	uid : function(uId){
 		setString("_uId",uId);
@@ -304,7 +324,9 @@ analyzeProperties = {
 			case "Dropdown":
 			case "TextArea":
 			case "CheckBox":
+			case "ParagraphHigh":
 			case "Paragraph":
+			case "Heading":
 					inr = "<select class='form-control' disabled='disabled'>"+
 							"<option>Default</option>"+
 						   "</select>";
@@ -322,7 +344,9 @@ analyzeProperties = {
 				temp.querySelector("input").value = label;
 			case "CheckBox":
 			   break;
+			case "ParagraphHigh":
 			case "Paragraph":
+			case "Heading":
 				temp.querySelector("input").disabled = true;
 				temp.querySelector("input").value = null;
 				break;
@@ -339,7 +363,9 @@ analyzeProperties = {
 				temp.querySelector("input").value = placeholder;
 			case "CheckBox":
 			   break;
+			case "ParagraphHigh":
 			case "Paragraph":
+			case "Heading":
 				temp.querySelector("input").value = null;
 				temp.querySelector("input").disabled = true;
 				break;
@@ -349,7 +375,9 @@ analyzeProperties = {
 		var temp = document.getElementById('_width');
 		switch(type){
 			case "TextArea":
+			case "ParagraphHigh":
 			case "Paragraph":
+			case "Heading":
 				$("#_width select")[0].selectedIndex = 1;
 				$("#_width select")[0].disabled = true;
 				break;
@@ -370,7 +398,9 @@ analyzeProperties = {
 	value: function(type,uId){		
 		document.getElementById('_value').innerHTML = "";
 		switch(type){
+			case "ParagraphHigh":
 			case "Paragraph":
+			case "Heading":
 				setString("_valueName","Text");
 				break;
 			case "RadioButton":
@@ -417,7 +447,8 @@ checkVal = function(uId){
 // 	<button class="btn btn-default" type="button">Go!</button>
 // </span>
 delValtb = function(node,uId){
-	tempPar = node.parentNode.parentNode;
+	var tempPar = node.parentNode.parentNode;
+	var temp = document.getElementById(uId+"-1");
 	var index = substringCust(tempPar.id,"-");
 	if (index > 1) {
 		cP[uId].values.splice(index-1,1);
@@ -425,11 +456,10 @@ delValtb = function(node,uId){
 	}
 	else{
 		if (document.querySelector(".second")==null)
-			document.querySelector("#"+uId+"-1 input").value = "";
+			temp.querySelector("input").value = "";
 		else
 			alert("cannot delete first element\n[hint]: delete other elements first");
 	}
-	console.log(node);
 }
 
 createValTb = function(uId,value){
@@ -442,7 +472,7 @@ createValTb = function(uId,value){
 	var valdiv = document.createElement("div");
 	valdiv.className = (iterator>1) ? "input-group second" : "input-group";
 	valdiv.id = uId+"-"+iterator;
-	
+
 	var valTb = document.createElement("input");
 	valTb.className = "form-control";
 	valTb.type = "text";
@@ -479,20 +509,28 @@ deleteControl = function(uId){
 
 }
 
-validate = function(uId){
-	if (cP[uId].type == "Paragraph") {
+validate = function(uId,closeModal){
+	if (cP[uId].type == "Paragraph" || cP[uId].type == "ParagraphHigh" || cP[uId].type == "Heading") {
 		var valArr = document.getElementsByName(uId+"-val");
 		console.log(valArr[0]);
 		if(valArr[0].value.length == 0){
 			alert("Error: You Must input some value for Paragraph");
-			return;
+			return false;
 		}
+		else
+			if (closeModal===true)
+				$("#modal-properties").modal("hide");
+			return;
+		
 	}
 	else
-		$("#modal-properties").modal("hide");
+		if (closeModal===true)
+			$("#modal-properties").modal("hide");
+		return;
+	
 }
 
-saveControl = function(uId){
+saveControl = function(uId,closeModal){
 
 	$("#modal-properties").modal("show");
 	var temp = null;
@@ -519,12 +557,13 @@ saveControl = function(uId){
 		if (valArr[i].value!="")
 		pObj.values[i] = valArr[i].value;
 	};
+ 
 
 	validate(uId);
-	updateControl(pObj._uid);
+	updateControl(pObj._uid,closeModal);
 }
 
-updateControl = function(uId){
+updateControl = function(uId,closeModal){
 	control = document.getElementById(uId);
 	var pObj = cP[uId];
 	var width = 0;
@@ -554,7 +593,9 @@ updateControl = function(uId){
 
 	// set Values
 	switch(pObj.type){
+		case "ParagraphHigh":
 		case "Paragraph":
+		case "Heading":
 			setString(control.id+" p",pObj.values[0]);
 			break;
 		case "Dropdown":
@@ -577,7 +618,8 @@ updateControl = function(uId){
 			for (var i = 0; i < pObj.values.length; i++) {
 				var Val = document.createElement('input');
 				var lbl = document.createElement('label');
-				Val.type = 'checkbox';
+				Val.type = 'radio';
+				Val.name = pObj._uid;
 				Val.disabled = 'disabled';
 
 				lbl.appendChild(Val)
@@ -613,7 +655,10 @@ updateControl = function(uId){
 		default:
 			break;
 	}
-
+	if(closeModal==false)
+		analyzeProperties.displayControl(document.getElementById(uId));
+	else
+		$("#modal-properties").modal("hide");
 }
 
 resetModal = function(){
@@ -707,6 +752,22 @@ delChildNodesAll = function(myNode){
 substringCust = function(str,sym){
 	return str.substring(str.indexOf(sym)+1,str.length);
 }
+
+generateFrm = function(arg){
+	switch(arg){
+		case "render":
+			console.log(cP);
+			console.log(arg+" Not Complete Yet");
+			break;
+		case "compile":
+			console.log(JSON.stringify(cP));
+			console.log(arg+" Not Complete Yet");
+			break;
+		default:
+			break;
+	}
+}
+
 window.onerror = function(ex) { alert(ex) };
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
