@@ -12,6 +12,9 @@
 #modal-properties tr:last-child td{
 	vertical-align: top;
 }
+#modal-properties tr td:first-child {
+  min-width: 153px;
+}
 #controlContainer .alert{
 	min-width: 220px;
 }
@@ -61,4 +64,9 @@
 .form-inline .form-group > input,
 .form-inline .form-group > select{
 	width: 70%;
+}
+.checkbox label,
+.radio label{
+	width:100%;
+	text-align: left;
 }

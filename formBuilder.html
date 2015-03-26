@@ -10,9 +10,10 @@
         <link href="assets/css/bootstrap.min.css" rel="stylesheet">
         <link href="assets/css/pprls.css" rel="stylesheet" type="text/css">
         <script src="assets/js/jquery-2.1.3.min.js"></script>
+        <script src="assets/js/jquery-ui.js"></script>
     </head>
-    <body onload="touchInit()">
-        <div class="container-fluid text-center">
+    <body onload="pprlsInit()">
+        <div class="container-fluid">
             <div class="col-sm-4 controls">
                 <div id="controlContainer" class="row">
                     <br/>
@@ -45,13 +46,19 @@
                     </div>
                     <legend>CheckBox</legend>
                     <div id="CheckBox" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
-                        <div>
-                            <input type="checkbox" value="1" disabled="disabled" data-node-type="control"> <label>checkbox</label>                        
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox">
+                                Checkbox
+                            </label>
                         </div>
                     </div>
                     <div id="RadioButton" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
-                        <div>
-                            <input type="radio" value="1" disabled="disabled" data-node-type="control"> <label>checkbox</label>  
+                        <div class="radio">
+                            <label>
+                                <input type="radio" value="1" disabled="disabled" data-node-type="control">  
+                                Checkbox
+                            </label>
                         </div>
                     </div>
                     <legend>TextBased</legend>
@@ -68,7 +75,12 @@
             <div class="col-sm-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        Drag and Drop controls to add in the form
+                        <div class="col-xs-3">
+                            <button class="btn btn-info text-left" onclick="pprlsInit()" data-toggle="tooltip" data-placement="bottom" title="Reset"><i class="glyphicon glyphicon-repeat" title="reset"></i></button>
+                            <button class="btn btn-info">Publish</button>
+                        </div>
+                        <div class="col-xs-9">Drag and Drop controls to add in the form</div>
+                        <div class="clearfix"></div>
                     </div>
                     <div class="panel-body">
                         <div id="DropZone" class="panel panel-default" ondragenter='return CRdragEnter(event)' ondrop='return CRdragDrop(event)' ondragover='return CRdragOver(event)' ondragleave='CRdragLeave(event)'>
@@ -84,10 +96,13 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button id="_closeModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title"><small>Properties:</small></h4>
                         </div>
                         <div class="modal-body" id="pprlsProperties">
+                            <div id="controlDisplay">
+                                
+                            </div>
                             <table class="table table-hover">
                                 <tbody>
                                     <tr>
@@ -154,6 +169,7 @@
             $( "#pprlsForm" ).disableSelection();
           });
         </script>
+        <script type="text/javascript">
         // var jsontext = '{"row":[{"col":[{"controller":"textbox","placeholder":"username"},{"controller":"textbox","placeholder":"password"}]},{"col":[{"controller":"button","placeholder":"Login"}]}]}';
         // var JsonObj = JSON.parse(jsontext);
         // console.log(JsonObj);
@@ -161,6 +177,6 @@
         </script>
         <!-- Bootstrap JavaScript -->
         <script src="assets/js/bootstrap.min.js"></script>
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <!-- // <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
     </body>
 </html>

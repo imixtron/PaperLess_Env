@@ -5,13 +5,16 @@
 
 
 // Drag N Drop Init:
-var dragIcon = document.createElement('img');
-dragIcon.src = 'assets/img/icons/appbar.layer.add.png';
-dragIcon.width = 100;
-pprlsrowCount = 0;
-formID = "dummy";
-cP = {};
-divId = "DropZone";
+pprlsInit = function(frmId){
+	dragIcon = document.createElement('img');
+	dragIcon.src = 'assets/img/icons/appbar.layer.add.png';
+	dragIcon.width = 100;
+	formID = frmId;
+	cP = {};
+	divId = "DropZone";
+	document.getElementById('pprlsForm').innerHTML = "";
+	touchInit();
+}
 
 // Drag N Drop Events:
 //Touch Init
@@ -200,6 +203,7 @@ setProperties = function(nodeCopy){
     {
 	    //Adding our controls properties to the object
 	    cP[uId] = {
+	    	// order : Object.keys(cP).length, 
 	    	_uid : uId,
 	    	type : nodeID,
 	    	required: false,
@@ -209,24 +213,22 @@ setProperties = function(nodeCopy){
 	    	placeholder : null,
 	    	cssClass : "form-group",
 	    	width : 6,
-	    	values :[undefined]
+	    	values :[]
 	    }
-	    popProperties(nodeCopy,uId);
+	    popProperties(nodeCopy,uId,true);
 	    remDataAttribs(nodeCopy,uId);
 	    return true;
 	}
 
-	popProperties(nodeCopy,uId);
+	popProperties(nodeCopy,uId,false);
 	remDataAttribs(nodeCopy,uId);
     return true;
 
 }
 
-popProperties = function(nodeCopy, uId){
+popProperties = function(nodeCopy, uId, newRun){
 	$("#modal-properties").modal("show");
-
 	var cP_Obj = cP[uId];
-
 	analyzeProperties.uid(cP_Obj._uid);
 	analyzeProperties.type(cP_Obj.type);
 	analyzeProperties.required(cP_Obj.required);
@@ -235,7 +237,11 @@ popProperties = function(nodeCopy, uId){
 	analyzeProperties.placeholder(cP_Obj.type,cP_Obj.placeholder);
 	analyzeProperties.width(cP_Obj.type,cP_Obj.width);
 	analyzeProperties.value(cP_Obj.type,cP_Obj._uid);
-	
+
+	if (newRun==false)
+		analyzeProperties.displayControl(document.getElementById(uId));
+	else
+		analyzeProperties.displayControl(null);
 }
 
 remDataAttribs = function(nodeCopy, uId){
@@ -265,6 +271,12 @@ remDataAttribs = function(nodeCopy, uId){
 }
 
 analyzeProperties = {
+	displayControl  : function(node){
+		console.log(node);
+		document.getElementById('controlDisplay').innerHTML = "";
+		if (node != null)
+		document.getElementById('controlDisplay').appendChild(node.cloneNode(true));
+	},
 	uid : function(uId){
 		setString("_uId",uId);
 	},
@@ -288,7 +300,7 @@ analyzeProperties = {
 								"<option value='date'>Date</option>"+
 						   "</select>";
 						   break;
-			case "Radio":
+			case "RadioButton":
 			case "Dropdown":
 			case "TextArea":
 			case "CheckBox":
@@ -305,10 +317,10 @@ analyzeProperties = {
 			case "TextBoxRight":
 			case "TextBoxLeft":
 			case "TextArea":
-			case "CheckBox":
 				if (label==null)
 					label = "label";
 				temp.querySelector("input").value = label;
+			case "CheckBox":
 			   break;
 			case "Paragraph":
 				temp.querySelector("input").disabled = true;
@@ -322,11 +334,10 @@ analyzeProperties = {
 			case "TextBoxRight":
 			case "TextBoxLeft":
 			case "TextArea":
-			case "CheckBox":
 				if (placeholder==null)
 					placeholder = "placeholder";
 				temp.querySelector("input").value = placeholder;
-
+			case "CheckBox":
 			   break;
 			case "Paragraph":
 				temp.querySelector("input").value = null;
@@ -366,8 +377,8 @@ analyzeProperties = {
 			case "Dropdown":
 			case "CheckBox":
 				setString("_valueName","Value <br/><small>click to add more checboxes</small>");
-				button = "<button onclick=\"createValTb('"+uId+"',undefined)\" class='pull-right btn btn-xs btn-success'><i class='glyphicon glyphicon-plus-sign'></i></button>";
-				setString("_value",button);
+				button = "<button onclick='createValTb(\""+uId+"\")' class='pull-right btn btn-xs btn-success'><i class='glyphicon glyphicon-plus-sign'></i></button>";
+				setString("_valueName",button,true);
 				break;
 			case "TextBoxRight":
 			case "TextBoxLeft":
@@ -391,8 +402,9 @@ analyzeProperties = {
 checkVal = function(uId){
 	var cP_Obj = cP[uId];
 
-	if (cP_Obj.values.length>=1) {
-		for (var i = 0; i < cP_Obj.values.length; i++) {
+	if (cP_Obj.values.length>0) {
+		var lng = cP_Obj.values.length;
+		for (var i = 0; i < lng; i++) {
 			createValTb(uId,cP_Obj.values[i]);
 		};		
 	}
@@ -401,17 +413,58 @@ checkVal = function(uId){
 		 /* iterate through array or object */
 }
 
-createValTb = function(uId,value){
-	var temp = document.getElementById('_value');
-	var valTb = document.createElement("input");
+// <span class="input-group-btn">
+// 	<button class="btn btn-default" type="button">Go!</button>
+// </span>
+delValtb = function(node,uId){
+	tempPar = node.parentNode.parentNode;
+	var index = substringCust(tempPar.id,"-");
+	if (index > 1) {
+		cP[uId].values.splice(index-1,1);
+		tempPar.remove();		
+	}
+	else{
+		if (document.querySelector(".second")==null)
+			document.querySelector("#"+uId+"-1 input").value = "";
+		else
+			alert("cannot delete first element\n[hint]: delete other elements first");
+	}
+	console.log(node);
+}
 
+createValTb = function(uId,value){
+	if (!value)
+		cP[uId].values.push('');
+
+	var iterator = cP[uId].values.length;
+
+	var temp = document.getElementById('_value');
+	var valdiv = document.createElement("div");
+	valdiv.className = (iterator>1) ? "input-group second" : "input-group";
+	valdiv.id = uId+"-"+iterator;
+	
+	var valTb = document.createElement("input");
 	valTb.className = "form-control";
 	valTb.type = "text";
 	valTb.name = uId+'-val';
 	valTb.placeholder = "insert value here";
 	valTb.value = (value==undefined) ? null : value;
+	// if (value=="")
 
-	temp.appendChild(valTb);
+	valBtn = document.createElement("button");
+	valBtn.innerHTML = "&times;";
+	valBtn.className = "btn btn-danger"
+	valBtn.type = "button";
+	valBtn.addEventListener("click", function(){delValtb(this,uId);}, false);;
+
+	var valBtnContainer = document.createElement("span");
+	valBtnContainer.className = "input-group-btn";
+
+	valBtnContainer.appendChild(valBtn);
+	valdiv.appendChild(valTb);
+	valdiv.appendChild(valBtnContainer);
+
+	temp.appendChild(valdiv);
 }
 
 deleteControl = function(uId){
@@ -420,7 +473,7 @@ deleteControl = function(uId){
 	parent  = getParentNode(child,false);
 
 	parent.removeChild(child);
-
+	delete cP[uId];
 	$("#modal-properties").modal("hide");
 	resetModal();
 
@@ -442,7 +495,7 @@ validate = function(uId){
 saveControl = function(uId){
 
 	$("#modal-properties").modal("show");
-	var tmep = null;
+	var temp = null;
 	var pObj = cP[uId];
 
 	temp = document.querySelector("#_required input");
@@ -461,7 +514,9 @@ saveControl = function(uId){
 	pObj.width 			= $("#_width select")[0].value;
 	// Saves Value(s)
 	var valArr = document.getElementsByName(uId+"-val");
+	pObj.values = [];
 	for (var i = 0; i < valArr.length; i++) {
+		if (valArr[i].value!="")
 		pObj.values[i] = valArr[i].value;
 	};
 
@@ -470,12 +525,16 @@ saveControl = function(uId){
 }
 
 updateControl = function(uId){
-	var control = document.getElementById(uId);
+	control = document.getElementById(uId);
 	var pObj = cP[uId];
 	var width = 0;
 
 	// set label
-	$("#"+uId+" label").html(pObj.label);
+	if (pObj.type!="CheckBox"){
+	if (pObj.type!="RadioButton"){
+		console.log(pObj.type)
+		$("#"+uId+" label").html(pObj.label);
+	}}
 
 	// set Placeholder
 	$("#"+uId+" input").attr('placeholder', pObj.placeholder);
@@ -494,18 +553,62 @@ updateControl = function(uId){
 	}
 
 	// set Values
-	var innerNode = control.querySelector("input");
 	switch(pObj.type){
 		case "Paragraph":
 			setString(control.id+" p",pObj.values[0]);
 			break;
 		case "Dropdown":
-			control.querySelector("select").options[0].text = pObj.values[0];
+			var selectItems = control.querySelector("select");
+			if(pObj.values.length>0)
+				delChildNodesAll(selectItems);
+
+			for (var i = 0; i < pObj.values.length; i++) {
+				var val = document.createElement("option");
+				val.text = pObj.values[i];
+				val.value = pObj.values[i];
+				selectItems.options.add(val,i);
+			};
+			break;
 		case "RadioButton":
+			var radioItems = control.querySelector('div');
+			if(pObj.values.length>0)
+			delChildNodesAll(radioItems);
+
+			for (var i = 0; i < pObj.values.length; i++) {
+				var Val = document.createElement('input');
+				var lbl = document.createElement('label');
+				Val.type = 'checkbox';
+				Val.disabled = 'disabled';
+
+				lbl.appendChild(Val)
+				lbl.innerHTML += pObj.values[i];
+
+				radioItems.appendChild(lbl);
+			};
+			break;
 		case "CheckBox":
+			var checkItems = control.querySelector('div');
+			if(pObj.values.length>0)
+			delChildNodesAll(checkItems);
+
+			for (var i = 0; i < pObj.values.length; i++) {
+				var Val = document.createElement('input');
+				var lbl = document.createElement('label');
+				Val.type = 'checkbox';
+				Val.disabled = 'disabled';
+
+				lbl.appendChild(Val)
+				lbl.innerHTML += pObj.values[i];
+
+				checkItems.appendChild(lbl);
+			};
+			break;
 		case "TextBoxRight":
 		case "TextBoxLeft":
+			control.querySelector('input').value = pObj.values[0]==undefined?"":pObj.values[0];
+			break;
 		case "TextArea":
+			control.querySelector('textarea').value = pObj.values[0]==undefined?"":pObj.values[0];
 			break;
 		default:
 			break;
@@ -517,52 +620,52 @@ resetModal = function(){
 
 }
 
-tbCheck = 0;
-insertSeprator = function(type){ // Fetches The Last Row to input 
+// tbCheck = 0;
+// insertSeprator = function(type){ // Fetches The Last Row to input 
 
-	var formObj = document.getElementById('pprlsForm');
-	var seprator = document.createElement('div');
-	seprator.className = "clearfix";
+// 	var formObj = document.getElementById('pprlsForm');
+// 	var seprator = document.createElement('div');
+// 	seprator.className = "clearfix";
 
-	switch(type){
-		case "TextBoxLeft":
-		case "TextBoxRight":
-		case "Dropdown":
-			tbCheck++;
-			if (tbCheck>2) {
-				console.log(tbCheck);
-				formObj.appendChild(seprator);
-				tbCheck = 0;
-			}
-			return 'pprlsForm';
-			break;
-		case "TextArea":
-		default:
-			formObj.appendChild(seprator);
-			tbCheck = 2;
-			return 'pprlsForm';
-			break;
-	}
-}
+// 	switch(type){
+// 		case "TextBoxLeft":
+// 		case "TextBoxRight":
+// 		case "Dropdown":
+// 			tbCheck++;
+// 			if (tbCheck>2) {
+// 				console.log(tbCheck);
+// 				formObj.appendChild(seprator);
+// 				tbCheck = 0;
+// 			}
+// 			return 'pprlsForm';
+// 			break;
+// 		case "TextArea":
+// 		default:
+// 			formObj.appendChild(seprator);
+// 			tbCheck = 2;
+// 			return 'pprlsForm';
+// 			break;
+// 	}
+// }
 
-isRowFull = function(rowObj){ // Checks if the row has more the 2 elements [requires row (jquery) obj]
-	if(rowObj.childElementCount>=2)
-		return true;
-	return false;
-}
+// isRowFull = function(rowObj){ // Checks if the row has more the 2 elements [requires row (jquery) obj]
+// 	if(rowObj.childElementCount>=2)
+// 		return true;
+// 	return false;
+// }
 
-createRow = function(){ // If the row is not available or is full Create Row function is called
-	var formObj = document.getElementById('pprlsForm');
-	pprlsrowCount++;
-	var rowHTML = document.createElement('div');
-	rowHTML.id = 'pprls_Row'+pprlsrowCount;
+// createRow = function(){ // If the row is not available or is full Create Row function is called
+// 	var formObj = document.getElementById('pprlsForm');
+// 	pprlsrowCount++;
+// 	var rowHTML = document.createElement('div');
+// 	rowHTML.id = 'pprls_Row'+pprlsrowCount;
 
-	formObj.appendChild(rowHTML);
+// 	formObj.appendChild(rowHTML);
 
-	var rowObj = formObj.children[formObj.childElementCount];
+// 	var rowObj = formObj.children[formObj.childElementCount];
 
-	return rowHTML.id;
-}
+// 	return rowHTML.id;
+// }
 
 generateId = function(){
 	var genItrator = "";
@@ -570,7 +673,7 @@ generateId = function(){
 
 	for( var i=0; i < 3; i++ )
 		genItrator += possible.charAt(Math.floor(Math.random() * possible.length));
-	return genItrator;
+	return Object.keys(cP).length+"-"+genItrator;
 }
 
 hover_DropZone = function(divId,val){
@@ -588,10 +691,22 @@ touch_checkDropzone = function(x,y){
 	}
 	return false;
 }
-setString = function(id,string){
+setString = function(id,string,append){
+	if (append==true){
+		$("#"+id).append(string);
+		return;
+	}
+
 	$("#"+id).html(string);
 }
-
+delChildNodesAll = function(myNode){
+	while (myNode.firstChild) {
+	    myNode.removeChild(myNode.firstChild);
+	}
+}
+substringCust = function(str,sym){
+	return str.substring(str.indexOf(sym)+1,str.length);
+}
 window.onerror = function(ex) { alert(ex) };
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
