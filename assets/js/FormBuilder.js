@@ -234,7 +234,7 @@ popProperties = function(nodeCopy, uId, newRun){
 	analyzeProperties.uid(cP_Obj._uid);
 	analyzeProperties.type(cP_Obj.type);
 	analyzeProperties.required(cP_Obj.required);
-	analyzeProperties.dataType(cP_Obj.type);
+	analyzeProperties.dataType(cP_Obj.type,cP_Obj.dataType);
 	analyzeProperties.label(cP_Obj.type,cP_Obj.label);
 	analyzeProperties.placeholder(cP_Obj.type,cP_Obj.placeholder);
 	analyzeProperties.width(cP_Obj.type,cP_Obj.width);
@@ -243,6 +243,7 @@ popProperties = function(nodeCopy, uId, newRun){
 	if (newRun==false)
 		analyzeProperties.displayControl(document.getElementById(uId));
 	else
+		analyzeProperties.displayControl(document.getElementById(null));
 		return;
 }
 
@@ -283,13 +284,32 @@ analyzeProperties = {
 	},
 	refreshNode : function(node){
 		nodeClone = node.cloneNode(true);
-		nodeClone.removeAttribute("onclick");
+		nodeClone.removeAttribute("onclick");		
+		var type = cP[nodeClone.id].type;
 		nodeClone.id = "demo-control";
 		nodeClone.classList.remove('col-xs-6');
 		nodeClone.classList.add('col-xs-12');
-		inputArr = nodeClone.querySelectorAll("input");
-		if (inputArr.length<1) 
-			inputArr = nodeClone.querySelectorAll("textarea");
+		switch(type){
+			case "TextBoxLeft":
+			case "TextBoxRight":
+			case "CheckBox":
+			case "RadioButton":
+				type = "input";
+				break;
+			case "TextArea":
+				type = "textarea";
+				break;
+			case "Dropdown":
+				type = "select";
+				break;
+			case "ParagraphHigh":
+			case "Paragraph":
+			case "Heading":
+			default:
+				return nodeClone;
+				break;
+		}
+		inputArr = nodeClone.querySelectorAll(type);
 
 		for (var i = 0; i < inputArr.length; i++) {
 			inputArr[i].removeAttribute('disabled');
@@ -307,31 +327,40 @@ analyzeProperties = {
 		var temp = document.getElementById('_required');
 		temp.childNodes[0].checked = req;
 	},
-	dataType : function(type){
+	dataType : function(type,selected){
 		var temp = document.getElementById('_dataType');
-		var inr;
+		var inr = "<select class='form-control'>";
 		switch(type){
 			case "TextBoxRight":
 			case "TextBoxLeft":
-					inr = "<select class='form-control'>"+
-								"<option value='text'>Text</option>"+
-								"<option value='email'>Email</option>"+
-								"<option value='number'>Number</option>"+
-								"<option value='date'>Date</option>"+
-						   "</select>";
+					inr += 	"<option value='text'>Text</option>"+
+							"<option value='email'>Email</option>"+
+							"<option value='number'>Number</option>"+
+							"<option value='date'>Date</option>";
 						   break;
 			case "RadioButton":
+					inr += "<option>radio</option>";
+					break;
+			case "CheckBox":
+					inr += "<option>checkbox</option>";
+					break;
 			case "Dropdown":
 			case "TextArea":
-			case "CheckBox":
 			case "ParagraphHigh":
 			case "Paragraph":
 			case "Heading":
-					inr = "<select class='form-control' disabled='disabled'>"+
-							"<option>Default</option>"+
-						   "</select>";
+			default:
+					inr += "<option>Default</option>";
+					break;
 		}
+		inr += "</select>";
 		temp.innerHTML = inr;
+		temp = temp.querySelector("select");
+		for (var i = 0; i < temp.options.length; i++) {
+			if(temp.options[i].value==selected){
+				temp.options[i].selected = true;
+			}
+		};
 	},
 	label : function(type,label){
 		var temp = document.getElementById('_label');
@@ -339,11 +368,19 @@ analyzeProperties = {
 			case "TextBoxRight":
 			case "TextBoxLeft":
 			case "TextArea":
+			case "Dropdown":
+				temp.querySelector("input").disabled = false;
 				if (label==null)
 					label = "label";
 				temp.querySelector("input").value = label;
+				break;
 			case "CheckBox":
-			   break;
+			case "RadioButton":
+				temp.querySelector("input").disabled = false;
+				if (label==null)
+					label = "label";
+				temp.querySelector("input").value = label;
+				break;
 			case "ParagraphHigh":
 			case "Paragraph":
 			case "Heading":
@@ -358,11 +395,14 @@ analyzeProperties = {
 			case "TextBoxRight":
 			case "TextBoxLeft":
 			case "TextArea":
+			case "Dropdown":
+				temp.querySelector("input").disabled = false;
 				if (placeholder==null)
 					placeholder = "placeholder";
 				temp.querySelector("input").value = placeholder;
+				break;
 			case "CheckBox":
-			   break;
+			case "RadioButton":
 			case "ParagraphHigh":
 			case "Paragraph":
 			case "Heading":
@@ -371,7 +411,7 @@ analyzeProperties = {
 				break;
 		}
 	},
-	width : function(type){
+	width : function(type,width){
 		var temp = document.getElementById('_width');
 		switch(type){
 			case "TextArea":
@@ -390,7 +430,13 @@ analyzeProperties = {
 			case "TextBoxLeft":
 			case "Dropdown":
 			default:
-				$("#_width select")[0].selectedIndex = 0;
+				temp = temp.querySelector("select");
+				for (var i = 0; i < temp.options.length; i++) {
+					if(temp.options[i].value==width){
+						$("#_width select")[0].selectedIndex = i;
+						break;
+					}
+				};
 				$("#_width select")[0].disabled = false;
 				break;
 		}
@@ -512,22 +558,21 @@ deleteControl = function(uId){
 validate = function(uId,closeModal){
 	if (cP[uId].type == "Paragraph" || cP[uId].type == "ParagraphHigh" || cP[uId].type == "Heading") {
 		var valArr = document.getElementsByName(uId+"-val");
-		console.log(valArr[0]);
 		if(valArr[0].value.length == 0){
 			alert("Error: You Must input some value for Paragraph");
 			return false;
 		}
-		else
-			if (closeModal===true)
+		else{
+			if (closeModal==true)
 				$("#modal-properties").modal("hide");
-			return;
-		
+			return true;
+		}
 	}
-	else
-		if (closeModal===true)
+	else{
+		if (closeModal==true)
 			$("#modal-properties").modal("hide");
-		return;
-	
+		return true;
+	}
 }
 
 saveControl = function(uId,closeModal){
@@ -540,7 +585,7 @@ saveControl = function(uId,closeModal){
 	pObj.required 		= (temp.checked) ? true : false;
 
 	temp = document.querySelector("#_dataType select");
-	pObj.dataType 		= temp.value;
+	pObj.dataType 		= temp.selectedOptions[0].value;
 
 	temp = document.querySelector("#_label input");
 	pObj.label 			= temp.value;
@@ -559,21 +604,28 @@ saveControl = function(uId,closeModal){
 	};
  
 
-	validate(uId);
-	updateControl(pObj._uid,closeModal);
+	updateControl(pObj._uid,closeModal,validate(uId));
 }
 
-updateControl = function(uId,closeModal){
+updateControl = function(uId,closeModal,validation){
+	if (validation==false)
+		return;
 	control = document.getElementById(uId);
 	var pObj = cP[uId];
 	var width = 0;
 
 	// set label
-	if (pObj.type!="CheckBox"){
-	if (pObj.type!="RadioButton"){
-		console.log(pObj.type)
+	if (pObj.type==="CheckBox"||pObj.type==="RadioButton"||pObj.type==="Textarea"){
+		$("#"+uId+" span").html(pObj.label);
+	}
+	else{
 		$("#"+uId+" label").html(pObj.label);
-	}}
+	}
+
+	// set Placeholder
+	$("#"+uId+" input").attr('type', pObj.dataType);
+	// if (pObj.type==="Textarea"||pObj.type==="CheckBox"||pObj.type==="Dropdown")
+	// 	$("#"+uId+" textarea").attr('type', pObj.dataType);
 
 	// set Placeholder
 	$("#"+uId+" input").attr('placeholder', pObj.placeholder);
@@ -595,8 +647,10 @@ updateControl = function(uId,closeModal){
 	switch(pObj.type){
 		case "ParagraphHigh":
 		case "Paragraph":
-		case "Heading":
 			setString(control.id+" p",pObj.values[0]);
+			break;
+		case "Heading":
+			setString(control.id+" h3",pObj.values[0]);
 			break;
 		case "Dropdown":
 			var selectItems = control.querySelector("select");
@@ -742,7 +796,10 @@ setString = function(id,string,append){
 		return;
 	}
 
-	$("#"+id).html(string);
+	$("#"+id).html(escapeStr(string));
+}
+escapeStr = function(string) {
+    return string.replace(/"/g, "'");
 }
 delChildNodesAll = function(myNode){
 	while (myNode.firstChild) {
@@ -753,18 +810,25 @@ substringCust = function(str,sym){
 	return str.substring(str.indexOf(sym)+1,str.length);
 }
 
-generateFrm = function(arg){
-	switch(arg){
-		case "render":
-			console.log(cP);
-			console.log(arg+" Not Complete Yet");
-			break;
-		case "compile":
-			console.log(JSON.stringify(cP));
-			console.log(arg+" Not Complete Yet");
-			break;
-		default:
-			break;
+generateFrm = {
+	compile: function(){
+		controls = generateFrm.sort();
+		console.log(pprlsControlIds);
+	},
+	sort: function(){
+		var pprlsControls = document.querySelectorAll("#pprlsForm > div");
+		var pprlsControlIds = [];
+		for (var i = 0; i < pprlsControls.length; i++) {
+			pprlsControlIds.push(pprlsControls[i].id);
+		};
+
+		for(var key in cP){
+			console.log(key);
+		}
+	},
+	render: function(){
+		console.log(JSON.stringify(cP));
+		console.log("Not Complete Yet");
 	}
 }
 
