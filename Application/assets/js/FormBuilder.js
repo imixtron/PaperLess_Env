@@ -719,53 +719,6 @@ resetModal = function(){
 
 }
 
-// tbCheck = 0;
-// insertSeprator = function(type){ // Fetches The Last Row to input 
-
-// 	var formObj = document.getElementById('pprlsForm');
-// 	var seprator = document.createElement('div');
-// 	seprator.className = "clearfix";
-
-// 	switch(type){
-// 		case "TextBoxLeft":
-// 		case "TextBoxRight":
-// 		case "Dropdown":
-// 			tbCheck++;
-// 			if (tbCheck>2) {
-// 				console.log(tbCheck);
-// 				formObj.appendChild(seprator);
-// 				tbCheck = 0;
-// 			}
-// 			return 'pprlsForm';
-// 			break;
-// 		case "TextArea":
-// 		default:
-// 			formObj.appendChild(seprator);
-// 			tbCheck = 2;
-// 			return 'pprlsForm';
-// 			break;
-// 	}
-// }
-
-// isRowFull = function(rowObj){ // Checks if the row has more the 2 elements [requires row (jquery) obj]
-// 	if(rowObj.childElementCount>=2)
-// 		return true;
-// 	return false;
-// }
-
-// createRow = function(){ // If the row is not available or is full Create Row function is called
-// 	var formObj = document.getElementById('pprlsForm');
-// 	pprlsrowCount++;
-// 	var rowHTML = document.createElement('div');
-// 	rowHTML.id = 'pprls_Row'+pprlsrowCount;
-
-// 	formObj.appendChild(rowHTML);
-
-// 	var rowObj = formObj.children[formObj.childElementCount];
-
-// 	return rowHTML.id;
-// }
-
 generateId = function(){
 	var genItrator = "";
 	var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -806,30 +759,158 @@ delChildNodesAll = function(myNode){
 	    myNode.removeChild(myNode.firstChild);
 	}
 }
-substringCust = function(str,sym){
+substringCust = function(str,sym,pre){
+	console.log(str+sym+pre);
+	if (pre==true)
+		return str.substring(0,str.indexOf(sym));
 	return str.substring(str.indexOf(sym)+1,str.length);
 }
 
-generateFrm = {
-	compile: function(){
-		controls = generateFrm.sort();
-		console.log(pprlsControlIds);
-	},
-	sort: function(){
-		var pprlsControls = document.querySelectorAll("#pprlsForm > div");
-		var pprlsControlIds = [];
-		for (var i = 0; i < pprlsControls.length; i++) {
-			pprlsControlIds.push(pprlsControls[i].id);
-		};
-
-		for(var key in cP){
-			console.log(key);
+formOper = {
+	Controls : {},
+	ControlString : "",
+	compile : function(){
+		if (formOper.render()==true)
+		{
+			formOper.ControlString = JSON.stringify(formOper.Controls);
+		}
+		else{
+			alert("Compile Failed For Some Reason");
+			console.error("Error in Redering");
+			console.error(formOper.ControlString);
+			console.error(cP);
 		}
 	},
-	render: function(){
-		console.log(JSON.stringify(cP));
-		console.log("Not Complete Yet");
+	render : function(){
+		var pprlsControls = document.querySelectorAll("#pprlsForm > div");
+		var pprlsControlIds = [];
+		var i =0;
+
+		for (i = 0; i < pprlsControls.length; i++) {
+			pprlsControlIds.push(pprlsControls[i].id);
+		};
+		i=0;
+		for(var key in cP){
+			if (key!=pprlsControlIds[i]){
+				var hashId = i+"-"+substringCust(pprlsControlIds[i],"-");
+				formOper.Controls[hashId] = cP[pprlsControlIds[i]];
+			}
+			else
+				formOper.Controls[key] = cP[pprlsControlIds[i]];				
+			i++;
+		}
+
+		if (cP.length===formOper.Controls.length)
+			return true;
+		return false;
+	},
+	createForm : function(ControlObj){
+		for(var key in ControlObj){
+			console.log(ControlObj[key].type);
+			InsertIntoForm(formOper.fetchNode(ControlObj[key].type));
+		}
+		cP = ControlObj;
+		$("#modal-properties").modal("hide");
+	},
+	bluePrints : {
+		TextBoxLeft : function(){
+			console.info("TextBoxLeft");
+			return '<div id="TextBoxLeft" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div id="lbl-before" class="input-group">'+
+                    '<label class="input-group-addon" data-node-type="control">Label</label>'+
+                    '<input class="form-control disabled" type="text" disabled="disabled" placeholder="palaceholder" data-node-type="control">'+
+                '</div>'+
+            '</div>';
+		},
+		TextBoxRight : function(){
+			console.info("TextBoxRight");
+			return '<div id="TextBoxRight" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div id="lbl-after" class="input-group">'+
+                    '<input class="form-control" type="text" disabled="disabled" placeholder="palaceholder" data-node-type="control">'+
+                    '<label class="input-group-addon disabled" data-node-type="control">Label</label>'+
+                '</div>'+
+            '</div>';
+		},
+		TextArea : function(){
+			console.info("Textarea");
+			return '<div id="TextArea" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div>'+
+                    '<span class="h5 pull-left" data-node-type="control">Text Area</span>'+
+                    '<TextArea class="form-control" placeholder="placeholder" disabled="disabled" data-node-type="control"></TextArea>'+
+                '</div>'+
+            '</div>';
+		},
+		Dropdown : function(){
+			console.info("Dropdown");
+			return '<div id="Dropdown" class="alert alert-info form-inline form-group" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div class="form-group">'+
+                    '<label class="label" data-node-type="control">Text Area</label>'+
+                    '<select class="form-control" disabled="disabled" data-node-type="control">'+
+                        '<option>Value</option>'+
+                    '</select>'+ 
+                '</div>'+
+            '</div>';
+		},
+		CheckBox : function(){
+			console.info("CheckBox");
+			return '<div id="CheckBox" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div class="checkbox">'+
+                    '<span class="h5 pull-left" data-node-type="control">Label</span>'+
+                    '<label>'+
+                        '<input type="checkbox">'+
+                        'Checkbox-Item'+
+                    '</label>'+
+                '</div>'+
+            '</div>';
+		},
+		RadioButton : function(){
+			console.info("RadioButton");
+            return '<div id="RadioButton" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div class="radio">'+
+                    '<span class="h5 pull-left" data-node-type="control">Label</span>'+
+                    '<label>'+
+                        '<input type="radio" value="1" disabled="disabled" data-node-type="control">  '+
+                        'Radio-Item'+
+                    '</label>'+
+                '</div>'+
+            '</div>';
+		},
+		ParagraphHigh : function(){
+			console.info("ParagraphHigh");
+			return '<div id="ParagraphHigh" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div>'+
+                    '<p class="lead" data-node-type="control">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod'+
+                    'tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,'+
+                    'quis nostrud exercitation ullamco </p> '+
+                '</div>'+
+            '</div>';
+		},
+		Paragraph : function(){
+			console.info("Paragraph");
+			return '<div id="Paragraph" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div>'+
+                    '<p class="p" data-node-type="control">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod'+
+                    'tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,'+
+                    'quis nostrud exercitation ullamco </p>'+
+                '</div>'+
+            '</div>';
+		},
+		Heading : function(){
+			console.info("Heading");
+			return '<div id="Heading" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+                '<div>'+
+                    '<h3 data-node-type="control">Heading 101</h3>'+
+                '</div>'+
+            '</div>';
+		}
+	},
+	fetchNode: function(id){
+		idhfj = id;
+		temp = document.createElement("div");
+			temp.innerHTML = formOper.bluePrints[id]();
+		return temp.firstChild;
 	}
+
 }
 
 window.onerror = function(ex) { alert(ex) };
