@@ -1,0 +1,23 @@
+Website
+//////////
+
+Subscribers- pk is email
+
+Organization
+
+Packages
+
+////////////
+
+
+
+Formsbuilder
+
+//////////
+User/Admin table
+Forms
+Signature
+Request ???? Why is this
+
+>>Dynamic Gen Tables
+//////////
