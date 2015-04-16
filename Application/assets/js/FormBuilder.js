@@ -185,9 +185,15 @@ CRdragDrop = function(ev) {
 	return false;
 }
 
-InsertIntoForm = function(nodeCopy){
-	$(nodeCopy).data('uId', generateId());
- 	setProperties(nodeCopy);
+InsertIntoForm = function(nodeCopy,id,oper){
+	if (id===undefined){
+		console.log("undefined")
+		$(nodeCopy).data('uId', generateId());
+	}
+	else
+		$(nodeCopy).data('uId', id);
+
+ 	setProperties(nodeCopy,oper);
 
 	var container = document.getElementById('pprlsForm');
 	container.appendChild(nodeCopy);
@@ -197,7 +203,7 @@ InsertIntoForm = function(nodeCopy){
 
 
 // Other Functions:
-setProperties = function(nodeCopy){
+setProperties = function(nodeCopy,oper){
 	var nodeID = nodeCopy.id;
 	uId = $(nodeCopy).data('uId');
 
@@ -221,15 +227,14 @@ setProperties = function(nodeCopy){
 	    remDataAttribs(nodeCopy,uId);
 	    return true;
 	}
-
-	popProperties(nodeCopy,uId,false);
+	popProperties(nodeCopy,uId,false,oper);
 	remDataAttribs(nodeCopy,uId);
     return true;
 
 }
 
-popProperties = function(nodeCopy, uId, newRun){
-	$("#modal-properties").modal("show");
+popProperties = function(nodeCopy, uId, newRun,oper){
+	modalOper('show',oper);
 	var cP_Obj = cP[uId];
 	analyzeProperties.uid(cP_Obj._uid);
 	analyzeProperties.type(cP_Obj.type);
@@ -267,16 +272,15 @@ remDataAttribs = function(nodeCopy, uId){
 	nc.attr('onclick', 'setProperties(this)');
 
 	$("#_close").attr('onclick', "validate('"+uId+"',true)");
-	$("#_updateControl").attr('onclick', "saveControl('"+uId+"',false)");
+	$("#_updateControl").attr('onclick', "saveControl('"+uId+"','update')");
 	$("#_delControl").attr('onclick', "deleteControl('"+uId+"')");
-	$("#_svControl").attr('onclick', "saveControl('"+uId+"')");
+	$("#_svControl").attr('onclick', "saveControl('"+uId+"','save')");
 
 	return nc;
 }
 
 analyzeProperties = {
 	displayControl  : function(node){
-		console.log(node);
 		document.getElementById('controlDisplay').innerHTML = "";
 		if (node == null)
 			return;
@@ -555,29 +559,58 @@ deleteControl = function(uId){
 
 }
 
-validate = function(uId,closeModal){
+validate = function(uId,oper){
 	if (cP[uId].type == "Paragraph" || cP[uId].type == "ParagraphHigh" || cP[uId].type == "Heading") {
 		var valArr = document.getElementsByName(uId+"-val");
-		if(valArr[0].value.length == 0){
-			alert("Error: You Must input some value for Paragraph");
+		if (valArr[0].value.length <= 0) {
+			alert("Error: You Must input value for a textbased control");
 			return false;
 		}
 		else{
-			if (closeModal==true)
-				$("#modal-properties").modal("hide");
+			modalOper("hide",oper);
 			return true;
 		}
 	}
 	else{
-		if (closeModal==true)
-			$("#modal-properties").modal("hide");
-		return true;
+		modalOper("hide",oper);
+	}
+
+	// if (cP[uId].type == "Paragraph" || cP[uId].type == "ParagraphHigh" || cP[uId].type == "Heading") {
+	// 	var valArr = document.getElementsByName(uId+"-val");
+	// 	if(valArr[0].value.length == 0){
+	// 		alert("Error: You Must input some value for Paragraph");
+	// 		return false;
+	// 	}
+	// 	else{
+	// 		if (closeModal==true)
+	// 			$("#modal-properties").modal("hide");
+	// 		return true;
+	// 	}
+	// }
+	// else{
+	// 	if (closeModal==true)
+	// 		$("#modal-properties").modal("hide");
+	// 	return true;
+	// }
+}
+modalOper = function(arg,oper){
+	switch(oper){
+		case 'close':
+		case 'save':
+			$("#modal-properties").modal(arg);
+			break;
+		case 'update':
+			if (arg=="hide")
+			 	analyzeProperties.displayControl(document.getElementById(uId));
+		case 'create':
+			break;
+		default:
+			$("#modal-properties").modal(arg);
+			break;
 	}
 }
-
-saveControl = function(uId,closeModal){
-
-	$("#modal-properties").modal("show");
+saveControl = function(uId,oper){
+	modalOper('show',oper);
 	var temp = null;
 	var pObj = cP[uId];
 
@@ -604,23 +637,22 @@ saveControl = function(uId,closeModal){
 	};
  
 
-	updateControl(pObj._uid,closeModal,validate(uId));
+	updateControl(pObj._uid,validate(uId));
+	modalOper('hide',oper);
 }
 
 updateControl = function(uId,closeModal,validation){
+
 	if (validation==false)
 		return;
+
 	control = document.getElementById(uId);
 	var pObj = cP[uId];
 	var width = 0;
 
 	// set label
-	if (pObj.type==="CheckBox"||pObj.type==="RadioButton"||pObj.type==="Textarea"){
-		$("#"+uId+" span").html(pObj.label);
-	}
-	else{
-		$("#"+uId+" label").html(pObj.label);
-	}
+	$("#"+uId+" span").html(pObj.label);
+	$("#"+uId+" label").html(pObj.label);
 
 	// set Placeholder
 	$("#"+uId+" input").attr('type', pObj.dataType);
@@ -634,7 +666,6 @@ updateControl = function(uId,closeModal,validation){
 	for (var i = 0; i < control.classList.length; i++) {
 		if(control.classList[i].substring(0,7) == "col-xs-"){
 			width = control.classList[i].substring(7);
-			console.log("width: " + width);
 		}
 	}
 
@@ -709,10 +740,11 @@ updateControl = function(uId,closeModal,validation){
 		default:
 			break;
 	}
-	if(closeModal==false)
-		analyzeProperties.displayControl(document.getElementById(uId));
-	else
-		$("#modal-properties").modal("hide");
+
+	// if(closeModal==false)
+	// 	analyzeProperties.displayControl(document.getElementById(uId));
+	// else
+	// 	$("#modal-properties").modal('hide');
 }
 
 resetModal = function(){
@@ -760,7 +792,6 @@ delChildNodesAll = function(myNode){
 	}
 }
 substringCust = function(str,sym,pre){
-	console.log(str+sym+pre);
 	if (pre==true)
 		return str.substring(0,str.indexOf(sym));
 	return str.substring(str.indexOf(sym)+1,str.length);
@@ -805,12 +836,12 @@ formOper = {
 		return false;
 	},
 	createForm : function(ControlObj){
-		for(var key in ControlObj){
-			console.log(ControlObj[key].type);
-			InsertIntoForm(formOper.fetchNode(ControlObj[key].type));
-		}
 		cP = ControlObj;
-		$("#modal-properties").modal("hide");
+		for(var key in ControlObj){
+			InsertIntoForm(formOper.fetchNode(ControlObj[key].type),ControlObj[key]._uid,'create');
+			saveControl(ControlObj[key]._uid,'create')
+			// $('modal-properties').on('hidden.bs.modal',);
+		}
 	},
 	bluePrints : {
 		TextBoxLeft : function(){
