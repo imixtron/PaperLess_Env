@@ -743,7 +743,7 @@ generateId = function(){
 
 	for( var i=0; i < 3; i++ )
 		genItrator += possible.charAt(Math.floor(Math.random() * possible.length));
-	return Object.keys(cP).length+"-"+genItrator;
+	return Object.keys(cP).length+genItrator;
 }
 
 hover_DropZone = function(divId,val){
@@ -782,6 +782,27 @@ substringCust = function(str,sym,pre){
 		return str.substring(0,str.indexOf(sym));
 	return str.substring(str.indexOf(sym)+1,str.length);
 }
+getTitle = function(){
+	title = document.querySelector("#Title input");
+	if(title.value==""){
+		title.value = prompt("Title cannot be empty. try again");
+		if(title.value==null||title.value==""){
+			alert.error("Invalid Title");
+			return false;
+		}
+	}
+	else
+	if(title.value[0].match(/^[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/i)){
+		title.value = prompt("Title Cannot start with a Number/Special-Char/Space. try again:");
+		if(title[0].match(/^[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/i)){
+			alert.error("Invalid Title");
+			return false;
+		}
+	}
+	title = title.value;
+	
+	return title.replace(/ /g,"_");
+}
 
 formOper = {
 	Controls : {},
@@ -789,8 +810,25 @@ formOper = {
 	compile : function(){
 		if (formOper.render()==true)
 		{
-			console.log("Success");
-			formOper.ControlString = JSON.stringify(formOper.Controls);
+			CO = [];
+			for(var key in formOper.Controls){
+				CO.push(formOper.Controls[key]);
+			}
+			formOper.ControlString = JSON.stringify(CO);
+			fobj = formOper.ControlString;
+			var title = getTitle();
+			if(title==false)
+				return;
+			
+			$.ajax({
+		        type: "POST",
+		        url: "Form",//jsp,servlet,struts action
+		        data: {'JSONarr': fobj, 'Title': title}
+			}).success(function(responseText){
+				console.log(fobj);
+				console.log("Success: Form Created");
+				console.log(responseText);
+			});
 		}
 		else{
 			alert("Compile Failed For Some Reason");
@@ -800,8 +838,13 @@ formOper = {
 		}
 	},
 	render : function(){
+		if(Object.keys(cP).length === 0){
+			alert("Cannot Create Empty Form");
+			return false;
+		}
 		var pprlsControls = document.querySelectorAll("#pprlsForm > div");
 		var pprlsControlIds = [];
+			
 		var i =0;
 
 		for (i = 0; i < pprlsControls.length; i++) {
@@ -810,7 +853,7 @@ formOper = {
 		i=0;
 		for(var key in cP){
 			if (key!=pprlsControlIds[i]){
-				var hashId = i+"-"+substringCust(pprlsControlIds[i],"-");
+				var hashId = i+pprlsControlIds[i].substring(1,pprlsControlIds[i].length);
 				formOper.Controls[hashId] = cP[pprlsControlIds[i]];
 			}
 			else
