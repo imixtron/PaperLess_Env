@@ -21,17 +21,7 @@
                     </header>
                     <div class="panel-body">
                     	<table class="table  table-hover general-table">
-                    	<thead>
-							<tr>
-							    <td>Title</td>
-							    <td>Description</td>
-							    <td>Approval</td>
-							    <td>Entries (%)</td>
-							</tr>
-						</thead>
-						<tbody>
-							<jsp:include page="/includes/formRows.jsp"></jsp:include>
-						</tbody>
+							<jsp:include page="/includes/getBrowse.jsp"></jsp:include>
                     	</table>
                     </div>
                 </section>
@@ -74,6 +64,7 @@
 <!--common script init for all pages-->
 <script src="js/scripts.js"></script>
 <script src="js/custom/auth.js"></script>
+<script src="js/custom/approve.js"></script>
 
 </body>
 </html>

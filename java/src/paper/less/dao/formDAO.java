@@ -17,23 +17,45 @@ import paper.less.bean.Form;
 import paper.less.data.Database;
 
 public class formDAO {
-	public static Boolean fetchForm(String formID) {
-		
-		return true;
+	public static Form fetchForm(String uri) {
+		String Query = "SELECT * FROM forms WHERE publicuri='"+uri+"'";
+		System.out.println(Query);
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Form f = new Form();
+		try {
+			pstmt = Database.getConnection().prepareStatement(Query);
+			rs = pstmt.executeQuery();
+			while(rs.next()){
+				f = createFormOb(rs);
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+
+		return f;
 	}
-	public static Boolean publishForm(String Json, String Title, String Organization) {
+	public static Boolean publishForm
+		(String Json, String Title, String Desc, int Orgid, int userid, int thr ) {
 		List<Controls> controls = initializeControls(Json);
 		
 		if(true){
 			Form frm = new Form();
 			
+			createTable(frm.getUri(), controls);
 			frm.setUri(getPublicUri());
-			createTable(Title, controls);
 			frm.setDelete(getQueries("delete",frm.getUri(),controls));
-			frm.setinsert(getQueries("insert",frm.getUri(),controls));
+			frm.setDescription(Desc);
+			frm.setEntryCount(0);
 			frm.setFormTitle(Title);
+			frm.setinsert(getQueries("insert",frm.getUri(),controls));
+			frm.setIsActive(false);
 			frm.setJsonArr(Json);
-			frm.setIsActive(0);
+			frm.setOrgid(Orgid);
+			frm.setSelect(null);
+			frm.setThreshold(thr);
+			frm.setUserid(userid);
+			
 			
 			String Query = "INSERT INTO `forms`(`formid`,`title`,`jsonarr`,`insert`,`delete`,`select`,`isActive`,`publicuri`)"+
 							"VALUES (null,'"+frm.getFormTitle()+"','"+frm.getJsonArr()+"','"+frm.getinsert()+"','"+frm.getDelete()+"',null,'"+frm.getIsActive()+"','"+frm.getUri()+"');";
@@ -55,7 +77,7 @@ public class formDAO {
 
 	private static boolean createTable(String title, List<Controls> controls) {
 		int i = 0;
-		String Query = "CREATE TABLE "+title+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, ";
+		String Query = "CREATE TABLE "+title+" (id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, ";
 		for (Iterator<Controls> iterator = controls.iterator(); iterator.hasNext();) {
 			Controls c = (Controls) iterator.next();
 			Query += c.get_uid();
@@ -115,7 +137,7 @@ public class formDAO {
 				System.out.println(Query);
 				break;
 			case "insert":
-				Query = "INSERT INTO "+tblName+"("+
+				Query = "INSERT INTO `paperless_formdata`.`"+tblName+"`("+
 						"id, ";
 				for (Iterator<Controls> iterator = controls.iterator(); iterator.hasNext();) {
 					Controls c = (Controls) iterator.next();
@@ -177,7 +199,54 @@ public class formDAO {
 		}
 		return genItrator;
 	}
-	public static void getAllForms(String orgid,String role) {
+	public static List<Form> getAllForms(String orgid,String role) {
+		List<Form> forms = new ArrayList<Form>();
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT * FROM forms";
+		try {
+			stmt = Database.getConnection().createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				forms.add(createFormOb(rs));
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		return forms;		
+	}
+	private static Form createFormOb(ResultSet rs) throws SQLException {
+		Form frm = new Form();
 		
+		frm.setUri(rs.getString("publicuri"));
+		frm.setDelete(rs.getString("delete"));
+		frm.setDescription(rs.getString("description"));
+		frm.setEntryCount(rs.getInt("threshold"));
+		frm.setFormTitle(rs.getString("title"));
+		frm.setinsert(rs.getString("insert"));
+		frm.setIsActive(rs.getBoolean("isActive"));
+		frm.setJsonArr(rs.getString("jsonarr"));
+		frm.setOrgid(rs.getInt("orgid"));
+		frm.setSelect(rs.getString("select"));
+		frm.setThreshold(rs.getInt("threshold"));
+		frm.setUserid(rs.getInt("userid"));
+
+		return frm;
+	}
+	private static int entryCount(String tablename) {
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT COUNT(*) AS entryCount FROM `paperless_formdata`.`"+tablename+"`;";
+		int count = 0;
+		try {
+			stmt = Database.getConnection().createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				count = rs.getInt("entryCount");
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
 }

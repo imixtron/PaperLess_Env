@@ -32,6 +32,10 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
   </head>
+  <script type="text/javascript">
+	userid = <% session.getAttribute("userid");%>
+  	org = <% session.getAttribute("userid");%>
+  </script>
 
   <body class="full-width" onload="pprlsInit()">
 
@@ -54,10 +58,14 @@
           <!--logo end-->
           <div class="horizontal-menu navbar-collapse collapse ">
             <ul class="nav navbar-nav">
-              <li id="Title"><input type="text" class="form-control" placeholder="Title"/></li>
               <li><a href="index.jsp">Back</a></li>
               <li class="active"><a href="#" onclick="formOper.compile()">Publish</a></li>
               <li class="active"><a href="#" onclick="confirm('are you sure',false) ? pprlsInit() : console.log('')"><i class="glyphicon glyphicon-repeat"></i>&nbsp; &nbsp;Revert</a></li>
+              <li class="form form-inline">
+              	<input id="Title" type="text" class="form-control" placeholder="Title"/>
+              	<input id="Desc" type="text" class="form-control" placeholder="Description"/>
+              	<input id="Thr" style="width:70px" type="number" class="form-control" placeholder="Target"/>
+              </li>
             </ul>
 
           </div>

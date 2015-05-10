@@ -795,7 +795,7 @@ substringCust = function(str,sym,pre){
 	return str.substring(str.indexOf(sym)+1,str.length);
 };
 getTitle = function(){
-	title = document.querySelector("#Title input");
+	title = document.querySelector("#Title");
 	if(title.value==""){
 		title.value = prompt("Title cannot be empty. try again");
 		if(title.value==null||title.value==""){
@@ -829,13 +829,15 @@ formOper = {
 			formOper.ControlString = JSON.stringify(CO);
 			fobj = formOper.ControlString;
 			var title = getTitle();
+			var Desc = document.querySelector("#Desc");
+			var Thr = document.querySelector("#Thr");
 			if(title==false)
 				return;
 
 			$.ajax({
 		        type: "POST",
 		        url: "Form",//jsp,servlet,struts action
-		        data: {'JSONarr': fobj, 'Title': title}
+		        data: {'JSONarr': fobj, 'Title': title, 'Desc':Desc, 'userid':userid, 'orgid':orgid, 'Thr':Thr}
 			}).success(function(responseText){
 				console.log(fobj);
 				console.log("Success: Form Created");

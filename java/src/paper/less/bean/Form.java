@@ -3,11 +3,16 @@ package paper.less.bean;
 public class Form {
 	String formTitle;
 	String jsonArr;
-	int isActive;
-	String uri;
+	boolean isActive;
 	String delete;
 	String insert;
 	String select;
+	String uri;
+	int orgid;
+	int userid;
+	int threshold;
+	String description;
+	int EntryCount;
 	
 	public String getFormTitle() {
 		return formTitle;
@@ -21,10 +26,10 @@ public class Form {
 	public void setJsonArr(String jsonArr) {
 		this.jsonArr = jsonArr;
 	}
-	public int getIsActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
-	public void setIsActive(int isActive) {
+	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
 	}
 	public String getUri() {
@@ -50,5 +55,35 @@ public class Form {
 	}
 	public void setSelect(String select) {
 		this.select = select;
+	}
+	public int getOrgid() {
+		return orgid;
+	}
+	public void setOrgid(int orgid) {
+		this.orgid = orgid;
+	}
+	public int getUserid() {
+		return userid;
+	}
+	public void setUserid(int userid) {
+		this.userid = userid;
+	}
+	public int getThreshold() {
+		return threshold;
+	}
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public int getEntryCount() {
+		return EntryCount;
+	}
+	public void setEntryCount(int entryCount) {
+		EntryCount = entryCount;
 	}
 }

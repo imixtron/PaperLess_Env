@@ -56,7 +56,7 @@
     <ul class="nav top-menu">
         <!-- settings start -->
         <li class="dropdown">
-            <jsp:include page="/includes/formRequests.jsp"></jsp:include>
+            <jsp:include page="formRequests.jsp"></jsp:include>
         </li>
         <!-- settings end -->
     </ul>
@@ -69,7 +69,7 @@
             <input type="text" class="form-control search" placeholder=" Search">
         </li>
         <!-- user login dropdown start-->
-        	<jsp:include page="/includes/adminInfo.jsp"></jsp:include>
+        	<jsp:include page="userInfo.jsp"></jsp:include>
         <!-- user login dropdown end -->
     </ul>
     <!--search & user info end-->

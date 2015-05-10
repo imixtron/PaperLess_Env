@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
     
-<% String _pageName = "getformname?"; %>
-
-<%@ include file="/includes/getHeader.jsp" %>
+<jsp:include page="/includes/getHeader.jsp">
+	<jsp:param value="Form" name="q"/>
+</jsp:include>
 
     <!--main content start-->
     <section id="main-content">
@@ -304,6 +304,7 @@
 <script src="js/scripts.js"></script>
 <script src="js/custom/auth.js"></script>
 <script src="js/custom/FormBuilder.js"></script>
+<%@ include file="/includes/getForm.jsp" %>
 
 </body>
 </html>

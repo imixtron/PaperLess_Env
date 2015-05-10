@@ -39,9 +39,13 @@ public class FormOper extends HttpServlet {
 		// TODO Auto-generated method stub
 		String JSONarr = request.getParameter("JSONarr");
 		String Title = request.getParameter("Title");
-		String Org   = request.getParameter("Organization");
+		String Desc   = request.getParameter("Desc");
+		Integer Orgid   = Integer.parseInt(request.getParameter("orgid"));
+		Integer userid   = Integer.parseInt(request.getParameter("userid"));
+		Integer thr   = Integer.parseInt(request.getParameter("Thr"));
+		
 		System.out.println(Title+","+JSONarr);
-		formDAO.publishForm(JSONarr,Title,Org);
+		formDAO.publishForm(JSONarr,Title,Desc,Orgid,userid,thr);
 	}
 
 }
