@@ -16,11 +16,11 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`paperless_formdata` /*!40100 DEFAULT CH
 
 USE `paperless_formdata`;
 
-/*Table structure for table `emp` */
+/*Table structure for table `bktza` */
 
-DROP TABLE IF EXISTS `emp`;
+DROP TABLE IF EXISTS `bktza`;
 
-CREATE TABLE `emp` (
+CREATE TABLE `bktza` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `0fpa` varchar(250) default NULL,
   `1l93` varchar(250) default NULL,
@@ -37,7 +37,22 @@ CREATE TABLE `emp` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-/*Data for the table `emp` */
+/*Data for the table `bktza` */
+
+/*Table structure for table `formdatahistory` */
+
+DROP TABLE IF EXISTS `formdatahistory`;
+
+CREATE TABLE `formdatahistory` (
+  `hsid` int(11) unsigned NOT NULL,
+  `id` int(11) unsigned NOT NULL,
+  `userid` int(11) unsigned NOT NULL,
+  `orgid` int(11) unsigned NOT NULL,
+  `dateTime` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`hsid`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+/*Data for the table `formdatahistory` */
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
