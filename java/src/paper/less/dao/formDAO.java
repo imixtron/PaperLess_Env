@@ -1,6 +1,7 @@
 package paper.less.dao;
 
 import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,35 +13,49 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import paper.less.bean.Controls;
+import paper.less.bean.Form;
 import paper.less.data.Database;
 
 public class formDAO {
-	
-	public static Boolean publishForm(String Json, String Title) {
+	public static Boolean fetchForm(String formID) {
+		
+		return true;
+	}
+	public static Boolean publishForm(String Json, String Title, String Organization) {
 		List<Controls> controls = initializeControls(Json);
 		
-		String uri = getPublicUri();
-		if(createTable(Title, controls)){
-			String insert = getQueries("update",Title,controls);
-			Title = Title.substring(5);
-	//		PreparedStatement pstmt = null;
-	//		String sql = null;
-	//		try {
-	//			pstmt = Database.getConnection().prepareStatement(sql);
-	//		} catch (ClassNotFoundException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		} catch (SQLException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
+		if(true){
+			Form frm = new Form();
+			
+			frm.setUri(getPublicUri());
+			createTable(Title, controls);
+			frm.setDelete(getQueries("delete",frm.getUri(),controls));
+			frm.setinsert(getQueries("insert",frm.getUri(),controls));
+			frm.setFormTitle(Title);
+			frm.setJsonArr(Json);
+			frm.setIsActive(0);
+			
+			String Query = "INSERT INTO `forms`(`formid`,`title`,`jsonarr`,`insert`,`delete`,`select`,`isActive`,`publicuri`)"+
+							"VALUES (null,'"+frm.getFormTitle()+"','"+frm.getJsonArr()+"','"+frm.getinsert()+"','"+frm.getDelete()+"',null,'"+frm.getIsActive()+"','"+frm.getUri()+"');";
+			System.out.println(Query);
+			PreparedStatement pstmt;
+			try {
+				pstmt = Database.getConnection().prepareStatement(Query);
+				pstmt.executeUpdate();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return true;
 	}
 
 	private static boolean createTable(String title, List<Controls> controls) {
 		int i = 0;
-		String Query = "CREATE TABLE "+title+" (";
+		String Query = "CREATE TABLE "+title+" (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, ";
 		for (Iterator<Controls> iterator = controls.iterator(); iterator.hasNext();) {
 			Controls c = (Controls) iterator.next();
 			Query += c.get_uid();
@@ -63,7 +78,7 @@ public class formDAO {
 				Query += " NOT NULL";
 			}
 			if (iterator.hasNext())
-				Query += ",\n";
+				Query += ", ";
 		}
 		Query+=")";
 		System.out.println(Query);
@@ -95,11 +110,16 @@ public class formDAO {
 		String Query = "";
 		int i = 0;
 		switch(oper){
+			case "delete":
+				Query = "DELETE FROM `paperless_formdata`.`"+tblName+"` WHERE `id` = ?";
+				System.out.println(Query);
+				break;
 			case "insert":
-				Query = "INSERT INTO "+tblName+"(";
+				Query = "INSERT INTO "+tblName+"("+
+						"id, ";
 				for (Iterator<Controls> iterator = controls.iterator(); iterator.hasNext();) {
 					Controls c = (Controls) iterator.next();
-					Query += i+c.getLabel();
+					Query += i+c.get_uid();
 					if (iterator.hasNext())
 						Query += ",";
 				}
@@ -109,7 +129,7 @@ public class formDAO {
 			default:
 				break;
 		}
-		return null;
+		return Query;
 	}
 
 	private static String getPublicUri() {
@@ -156,5 +176,8 @@ public class formDAO {
 			genItrator += possible.charAt(rando);
 		}
 		return genItrator;
+	}
+	public static void getAllForms(String orgid,String role) {
+		
 	}
 }

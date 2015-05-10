@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +13,8 @@
   <title> Create Form </title>
 
   <!--Core CSS -->
-  <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/bootstrap-reset.css" rel="stylesheet">
+  <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
   <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
 
   <!-- Custom styles for this template -->
@@ -53,7 +55,7 @@
           <div class="horizontal-menu navbar-collapse collapse ">
             <ul class="nav navbar-nav">
               <li id="Title"><input type="text" class="form-control" placeholder="Title"/></li>
-              <li><a href="index.html">Back</a></li>
+              <li><a href="index.jsp">Back</a></li>
               <li class="active"><a href="#" onclick="formOper.compile()">Publish</a></li>
               <li class="active"><a href="#" onclick="confirm('are you sure',false) ? pprlsInit() : console.log('')"><i class="glyphicon glyphicon-repeat"></i>&nbsp; &nbsp;Revert</a></li>
             </ul>
@@ -142,6 +144,9 @@
                       Checkbox-Item
                     </label>
                   </div>
+                </div>
+                <div id="Seperator" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
+                  	<hr class="clearfix"/>
                 </div>
                 <legend>TextBased</legend>
                   <div id="ParagraphHigh" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">
@@ -282,7 +287,7 @@
       <script src="js/flot-chart/jquery.flot.resize.js"></script>
       <script src="js/flot-chart/jquery.flot.pie.resize.js"></script>
 
-      <script type="text/javascript" src="js/FormBuilder.js"></script>
+      <script type="text/javascript" src="js/custom/FormBuilder.js"></script>
       <script>
         $(function() {
           $( "#pprlsForm" ).sortable();

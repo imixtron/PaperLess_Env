@@ -1,26 +1,26 @@
-package paper.less.comm;
+package paper.less.controller;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import paper.less.dao.formDAO;
+import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class FormOper
+ * Servlet implementation class Logout
  */
-@WebServlet("/Form")
-public class FormOper extends HttpServlet {
+@WebServlet("/Logout")
+public class Logout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public FormOper() {
+    public Logout() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,10 +37,23 @@ public class FormOper extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String JSONarr = request.getParameter("JSONarr");
-		String Title = request.getParameter("Title");
-		System.out.println(Title+","+JSONarr);
-		formDAO.publishForm(JSONarr,Title);
+		response.setContentType("text/html");
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null){
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("JSESSIONID")){
+                System.out.println("JSESSIONID="+cookie.getValue());
+                break;
+            }
+        }
+        }
+        //invalidate the session if exists
+        HttpSession session = request.getSession(false);
+        System.out.println("User="+session.getAttribute("user"));
+        if(session != null){
+            session.invalidate();
+        }
+        response.sendRedirect("login.html");
 	}
 
 }

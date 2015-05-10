@@ -7,6 +7,7 @@ public class Request {
 	Timestamp reqTime;
 	Boolean isActive;
 	String reqDesc;
+	String title;
 	
 	public int getUserid() {
 		return userid;
@@ -31,5 +32,11 @@ public class Request {
 	}
 	public void setReqDesc(String reqDesc) {
 		this.reqDesc = reqDesc;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

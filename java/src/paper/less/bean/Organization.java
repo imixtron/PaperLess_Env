@@ -11,6 +11,8 @@ public class Organization {
 	int formCount;
 	int peopleCOunt;
 	Date expiration;
+	String orguri;
+	
 	public int getOrgid() {
 		return orgid;
 	}
@@ -58,6 +60,12 @@ public class Organization {
 	}
 	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
+	}
+	public String getOrguri() {
+		return orguri;
+	}
+	public void setOrguri(String orguri) {
+		this.orguri = orguri;
 	}
 	
 }

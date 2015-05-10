@@ -3,7 +3,7 @@ package paper.less.bean;
 public class Form {
 	String formTitle;
 	String jsonArr;
-	Boolean isActive;
+	int isActive;
 	String uri;
 	String delete;
 	String insert;
@@ -21,10 +21,10 @@ public class Form {
 	public void setJsonArr(String jsonArr) {
 		this.jsonArr = jsonArr;
 	}
-	public Boolean getIsActive() {
+	public int getIsActive() {
 		return isActive;
 	}
-	public void setIsActive(Boolean isActive) {
+	public void setIsActive(int isActive) {
 		this.isActive = isActive;
 	}
 	public String getUri() {

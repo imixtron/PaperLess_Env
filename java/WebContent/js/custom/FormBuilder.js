@@ -187,7 +187,7 @@ CRdragDrop = function(ev) {
 
 InsertIntoForm = function(nodeCopy,id,oper){
 	if (id===undefined){
-		console.log("undefined")
+		console.log("undefined");
 		$(nodeCopy).data('uId', generateId());
 	}
 	else
@@ -195,7 +195,7 @@ InsertIntoForm = function(nodeCopy,id,oper){
 
  	setProperties(nodeCopy,oper);
 
-	var container = document.getElementById('pprlsForm');
+ 	var container = document.getElementById('pprlsForm');
 	container.appendChild(nodeCopy);
 }
 
@@ -228,7 +228,7 @@ setProperties = function(nodeCopy,oper){
 	    return true;
 	}
 	popProperties(nodeCopy,uId,false,oper);
-	remDataAttribs(nodeCopy,uId);
+	remDataAttribs(nodeCopy,uId,oper);
     return true;
 
 }
@@ -252,7 +252,7 @@ popProperties = function(nodeCopy, uId, newRun,oper){
 		return;
 }
 
-remDataAttribs = function(nodeCopy, uId){
+remDataAttribs = function(nodeCopy, uId, oper){
 	var nc = $(nodeCopy);
 
 	nc.removeAttr('draggable');
@@ -269,13 +269,14 @@ remDataAttribs = function(nodeCopy, uId){
 	nc.addClass('form-group');
 	nc.addClass('ui-state-default');
 	nc.attr("id", uId);
-	nc.attr('onclick', 'setProperties(this)');
-
-	$("#_close").attr('onclick', "validate('"+uId+"',true)");
-	$("#_updateControl").attr('onclick', "saveControl('"+uId+"','update')");
-	$("#_delControl").attr('onclick', "deleteControl('"+uId+"')");
-	$("#_svControl").attr('onclick', "saveControl('"+uId+"','save')");
-
+	if(oper!="create"){
+		nc.attr('onclick', 'setProperties(this)');
+	
+		$("#_close").attr('onclick', "validate('"+uId+"',true)");
+		$("#_updateControl").attr('onclick', "saveControl('"+uId+"','update')");
+		$("#_delControl").attr('onclick', "deleteControl('"+uId+"')");
+		$("#_svControl").attr('onclick', "saveControl('"+uId+"','save')");
+	}
 	return nc;
 }
 
@@ -306,6 +307,7 @@ analyzeProperties = {
 			case "Dropdown":
 				type = "select";
 				break;
+			case "Seperator":
 			case "ParagraphHigh":
 			case "Paragraph":
 			case "Heading":
@@ -353,6 +355,7 @@ analyzeProperties = {
 			case "ParagraphHigh":
 			case "Paragraph":
 			case "Heading":
+			case "Seperator":
 			default:
 					inr += "<option>Default</option>";
 					break;
@@ -387,6 +390,7 @@ analyzeProperties = {
 				break;
 			case "ParagraphHigh":
 			case "Paragraph":
+			case "Seperator":
 			case "Heading":
 				temp.querySelector("input").disabled = true;
 				temp.querySelector("input").value = null;
@@ -409,6 +413,7 @@ analyzeProperties = {
 			case "RadioButton":
 			case "ParagraphHigh":
 			case "Paragraph":
+			case "Seperator":
 			case "Heading":
 				temp.querySelector("input").value = null;
 				temp.querySelector("input").disabled = true;
@@ -418,9 +423,9 @@ analyzeProperties = {
 	width : function(type,width){
 		var temp = document.getElementById('_width');
 		switch(type){
-			case "TextArea":
 			case "ParagraphHigh":
 			case "Paragraph":
+			case "Seperator":
 			case "Heading":
 				$("#_width select")[0].selectedIndex = 1;
 				$("#_width select")[0].disabled = true;
@@ -430,6 +435,7 @@ analyzeProperties = {
 				$("#_width select")[0].selectedIndex = 0;
 				$("#_width select")[0].disabled = true;
 				break;
+			case "TextArea":
 			case "TextBoxRight":
 			case "TextBoxLeft":
 			case "Dropdown":
@@ -465,6 +471,8 @@ analyzeProperties = {
 			case "TextArea":
 				setString("_valueName","Default Value:<br/><small>not required</small>");
 				break;
+			case "Seperator":
+				setString("_valueName","");
 			default:
 				break;
 		}
@@ -513,9 +521,11 @@ delValtb = function(node,uId){
 }
 
 createValTb = function(uId,value){
-	if (!value)
+	if(cP[uId].type == "Seperator")
+		return;
+	if (value==undefined)
 		cP[uId].values.push('');
-
+	
 	var iterator = cP[uId].values.length;
 
 	var temp = document.getElementById('_value');
@@ -533,7 +543,7 @@ createValTb = function(uId,value){
 
 	valBtn = document.createElement("button");
 	valBtn.innerHTML = "&times;";
-	valBtn.className = "btn btn-danger"
+	valBtn.className = "btn btn-danger";
 	valBtn.type = "button";
 	valBtn.addEventListener("click", function(){delValtb(this,uId);}, false);;
 
@@ -545,7 +555,7 @@ createValTb = function(uId,value){
 	valdiv.appendChild(valBtnContainer);
 
 	temp.appendChild(valdiv);
-}
+};
 
 deleteControl = function(uId){
 
@@ -557,7 +567,7 @@ deleteControl = function(uId){
 	$("#modal-properties").modal("hide");
 	resetModal();
 
-}
+};
 
 validate = function(uId,oper){
 	if (cP[uId].type == "Paragraph" || cP[uId].type == "ParagraphHigh" || cP[uId].type == "Heading") {
@@ -574,7 +584,7 @@ validate = function(uId,oper){
 	else{
 		modalOper("hide",oper);
 	}
-}
+};
 modalOper = function(arg,oper){
 	switch(oper){
 		case 'close':
@@ -591,7 +601,7 @@ modalOper = function(arg,oper){
 			$("#modal-properties").modal(arg);
 			break;
 	}
-}
+};
 saveControl = function(uId,oper){
 	console.log("Opertation."+oper);
 	modalOper('show',oper);
@@ -616,14 +626,15 @@ saveControl = function(uId,oper){
 	var valArr = document.getElementsByName(uId+"-val");
 	pObj.values = [];
 	for (var i = 0; i < valArr.length; i++) {
-		if (valArr[i].value!="")
-		pObj.values[i] = valArr[i].value;
+		if (valArr[i].value!=""){
+			pObj.values[i] = valArr[i].value;
+		}
 	};
  
 
 	updateControl(pObj._uid,validate(uId,oper));
 	modalOper('hide',oper);
-}
+};
 
 updateControl = function(uId,closeModal,validation){
 
@@ -660,14 +671,15 @@ updateControl = function(uId,closeModal,validation){
 		control.classList.add("col-xs-"+pObj.width);
 	}
 
+	console.log("updateControls:");
 	// set Values
 	switch(pObj.type){
 		case "ParagraphHigh":
 		case "Paragraph":
-			setString(control.id+" p",pObj.values[0]);
+			control.querySelector('p').innerHTML = pObj.values[0];
 			break;
 		case "Heading":
-			setString(control.id+" h3",pObj.values[0]);
+			control.querySelector('h3').innerHTML = pObj.values[0];
 			break;
 		case "Dropdown":
 			var selectItems = control.querySelector("select");
@@ -731,11 +743,11 @@ updateControl = function(uId,closeModal,validation){
 	// 	analyzeProperties.displayControl(document.getElementById(uId));
 	// else
 	// 	$("#modal-properties").modal('hide');
-}
+};
 
 resetModal = function(){
 
-}
+};
 
 generateId = function(){
 	var genItrator = "";
@@ -744,14 +756,14 @@ generateId = function(){
 	for( var i=0; i < 3; i++ )
 		genItrator += possible.charAt(Math.floor(Math.random() * possible.length));
 	return Object.keys(cP).length+genItrator;
-}
+};
 
 hover_DropZone = function(divId,val){
 	if (val==1) 
 		$("#"+divId).css('border', '2px dashed rgba(0,0,0,0.5)');
 	else
 		$("#"+divId).css('border', '2px dashed rgba(0,0,0,0.2)');
-}
+};
 
 touch_checkDropzone = function(x,y){
 	boxMap = getPosition("DropZone");
@@ -760,7 +772,7 @@ touch_checkDropzone = function(x,y){
 			return true;
 	}
 	return false;
-}
+};
 setString = function(id,string,append){
 	if (append==true){
 		$("#"+id).append(string);
@@ -768,26 +780,26 @@ setString = function(id,string,append){
 	}
 
 	$("#"+id).html(escapeStr(string));
-}
+};
 escapeStr = function(string) {
     return string.replace(/"/g, "'");
-}
+};
 delChildNodesAll = function(myNode,index){
 	while (myNode.firstChild) {
 	    myNode.removeChild(myNode.firstChild);
 	}
-}
+};
 substringCust = function(str,sym,pre){
 	if (pre==true)
 		return str.substring(0,str.indexOf(sym));
 	return str.substring(str.indexOf(sym)+1,str.length);
-}
+};
 getTitle = function(){
 	title = document.querySelector("#Title input");
 	if(title.value==""){
 		title.value = prompt("Title cannot be empty. try again");
 		if(title.value==null||title.value==""){
-			alert.error("Invalid Title");
+			alert("Invalid Title");
 			return false;
 		}
 	}
@@ -801,8 +813,8 @@ getTitle = function(){
 	}
 	title = title.value;
 	
-	return title.replace(/ /g,"_");
-}
+	return title;
+};
 
 formOper = {
 	Controls : {},
@@ -819,7 +831,7 @@ formOper = {
 			var title = getTitle();
 			if(title==false)
 				return;
-			
+
 			$.ajax({
 		        type: "POST",
 		        url: "Form",//jsp,servlet,struts action
@@ -842,8 +854,8 @@ formOper = {
 			alert("Cannot Create Empty Form");
 			return false;
 		}
-		var pprlsControls = document.querySelectorAll("#pprlsForm > div");
-		var pprlsControlIds = [];
+		 pprlsControls = document.querySelectorAll("#pprlsForm > div");
+		 pprlsControlIds = [];
 			
 		var i =0;
 
@@ -867,12 +879,27 @@ formOper = {
 		return false;
 	},
 	createForm : function(ControlObj){
-		cP = ControlObj;
-		for(var key in ControlObj){
-			InsertIntoForm(formOper.fetchNode(ControlObj[key].type),ControlObj[key]._uid,'create');
-			saveControl(ControlObj[key]._uid,'create')
-			// $('modal-properties').on('hidden.bs.modal',);
+		cPr = JSON.parse(ControlObj);
+		console.log(cPr);
+		for(i=0;i<cPr.length;i++){
+			console.log(cPr[i]);
+			cP[cPr[i]._uid] = cPr[i];
 		}
+		for(var key in cP){
+			console.log("creating: "+key);
+			InsertIntoForm(formOper.fetchNode(cP[key].type),cP[key]._uid,'create');
+			saveControl(cP[key]._uid,'create');
+		}
+		tbx = document.querySelectorAll('#pprlsForm input');
+		tar = document.querySelectorAll('#pprlsForm textarea');
+
+		for(i=0;i<tbx.length;i++)
+			tbx[i].disabled = false;
+
+		for(i=0;i<tar.length;i++)
+			tar[i].disabled = false;
+
+		$('#modal-properties').modal('hide');
 	},
 	bluePrints : {
 		TextBoxLeft : function(){
@@ -964,6 +991,12 @@ formOper = {
                     '<h3 data-node-type="control">Heading 101</h3>'+
                 '</div>'+
             '</div>';
+		},
+		Seperator : function(){
+			console.info("Heading");
+			return '<div id="Seperator" class="alert alert-info" draggable="true" ondragstart="CRdragStart(event)">'+
+	          	      '<hr class="clearfix"/>'+
+      			   '</div>';
 		}
 	},
 	fetchNode: function(id){
@@ -973,7 +1006,7 @@ formOper = {
 		return temp.firstChild;
 	}
 
-}
+};
 
 // window.onerror = function(ex) { alert(ex) };
 // $(function () {
