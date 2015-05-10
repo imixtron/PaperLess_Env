@@ -196,7 +196,14 @@ InsertIntoForm = function(nodeCopy,id,oper){
  	setProperties(nodeCopy,oper);
 
  	var container = document.getElementById('pprlsForm');
-	container.appendChild(nodeCopy);
+ 	if(nodeCopy.querySelector('div.checkbox')){
+ 		nodeCopy.querySelector('div.checkbox').id = nodeCopy.id;
+ 	}
+ 	else if(nodeCopy.querySelector('div.radio')){
+ 		nodeCopy.querySelector('div.radio').id = nodeCopy.id;
+ 	}
+ 		
+ 	container.appendChild(nodeCopy);
 }
 
 //MOVE:
@@ -352,6 +359,8 @@ analyzeProperties = {
 					break;
 			case "Dropdown":
 			case "TextArea":
+				inr += "<option value='text'>Text</option>";
+				break;
 			case "ParagraphHigh":
 			case "Paragraph":
 			case "Heading":
@@ -676,7 +685,7 @@ updateControl = function(uId,closeModal,validation){
 	switch(pObj.type){
 		case "ParagraphHigh":
 		case "Paragraph":
-			control.querySelector('p').innerHTML = pObj.values[0];
+			control.querySelector('p').innerHTML = pObj.values[0].replace(/'/g, " ");
 			break;
 		case "Heading":
 			control.querySelector('h3').innerHTML = pObj.values[0];
@@ -829,17 +838,16 @@ formOper = {
 			formOper.ControlString = JSON.stringify(CO);
 			fobj = formOper.ControlString;
 			var title = getTitle();
-			var Desc = document.querySelector("#Desc");
-			var Thr = document.querySelector("#Thr");
+			var Desc = document.querySelector("#Desc").value;
+			var Thr = document.querySelector("#Thr").value;
 			if(title==false)
 				return;
 
 			$.ajax({
 		        type: "POST",
 		        url: "Form",//jsp,servlet,struts action
-		        data: {'JSONarr': fobj, 'Title': title, 'Desc':Desc, 'userid':userid, 'orgid':orgid, 'Thr':Thr}
+		        data: {'JSONarr': fobj, 'Title': title, 'Desc':Desc, 'userid':userid, 'orgid':org, 'Thr':Thr}
 			}).success(function(responseText){
-				console.log(fobj);
 				console.log("Success: Form Created");
 				console.log(responseText);
 			});
@@ -894,6 +902,7 @@ formOper = {
 		}
 		tbx = document.querySelectorAll('#pprlsForm input');
 		tar = document.querySelectorAll('#pprlsForm textarea');
+		sel = document.querySelectorAll('#pprlsForm select');
 
 		for(i=0;i<tbx.length;i++)
 			tbx[i].disabled = false;
@@ -901,7 +910,70 @@ formOper = {
 		for(i=0;i<tar.length;i++)
 			tar[i].disabled = false;
 
+		for(i=0;i<sel.length;i++)
+			sel[i].disabled = false;
+
 		$('#modal-properties').modal('hide');
+	},
+	frmSubmit : function(){
+		controls = [];
+		temp = document.querySelectorAll("#pprlsForm input");
+		for(i=0; i<temp.length; i++){
+			controls.push(temp[i]);
+		}
+		temp = document.querySelectorAll("#pprlsForm textarea");
+		for(i=0; i<temp.length; i++){
+			controls.push(temp[i]);
+		}
+		temp = document.querySelectorAll("#pprlsForm select");
+		for(i=0; i<temp.length; i++){
+			controls.push(temp[i]);
+		}
+		Data = {};		
+		var j = 0;
+		for(i=0; i<controls.length; i++){
+			var d;
+			var uid = controls[i].parentNode.parentNode.id;
+			
+			switch(cP[uid].type){
+				case "RadioButton":
+					if(controls[i].checked)
+						d = cP[uid].values[j];
+					else
+						j++;
+					break;
+				case "CheckBox":
+					if(controls[i].checked)
+						d += cP[uid].values[j]+"; ";
+					else
+						j++;
+					break;
+				case "Dropdown":
+				case "TextBoxRight":
+				case "TextBoxLeft":
+				case "TextArea":
+					d = controls[i].value
+					break;				
+				case "ParagraphHigh":
+				case "Paragraph":
+				case "Heading":
+				case "Seperator":
+					default:
+			}
+
+			console.log(d);
+			Data[uid] = d;
+		}
+		var dataString = JSON.stringify(Data);
+		$.ajax({
+	        type: "POST",
+	        url: "FormData",//jsp,servlet,struts action
+	        data: {'frmData': dataString, 'frmID': formID}
+		}).success(function(responseText){
+			console.log("Success: Form Created");
+			console.log(responseText);
+		});
+		
 	},
 	bluePrints : {
 		TextBoxLeft : function(){

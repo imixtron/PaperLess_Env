@@ -74,9 +74,15 @@
                   </div><!-- /.modal-dialog -->
                 </div><!-- /.modal -->
 
+    <link href="css/pprls.css" rel="stylesheet">
 <script>
-	pprlsInit();
+	pprlsInit(<% out.print("'"+formID+"'"); %>);
 	jsonArr = <% out.println("'"+frm.getJsonArr()+"'"); %>;
 	console.log(jsonArr);
 	formOper.createForm(jsonArr);
+	document.getElementById("frmTitle").innerHTML = <% out.print("'"+frm.getFormTitle()+"'");%>;
+	document.getElementById("frmSub").onclick = 
+		function(){
+			formOper.frmSubmit();
+		}
 </script>

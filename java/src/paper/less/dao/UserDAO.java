@@ -8,6 +8,7 @@ import paper.less.data.Database;
 
 public class UserDAO {
 	public static String getUsername(String userid) {
+		System.out.println("usrid:"+userid);
 		Statement stmt = null;
 		ResultSet rs = null;
 		String sql = "SELECT username FROM user WHERE userid="+userid;

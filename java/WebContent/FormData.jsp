@@ -55,7 +55,6 @@
 <script src="js/scripts.js"></script>
 <script src="js/custom/auth.js"></script>
 <script src="js/custom/FormBuilder.js"></script>
-<%@ include file="/includes/getForm.jsp" %>
 
 </body>
 </html>

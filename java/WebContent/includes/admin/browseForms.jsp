@@ -26,18 +26,18 @@
 		approval = "Not Approved";
 		apClass = "info";
 	}
-	String userid = ""+f.getUserid();
+	int uid = f.getUserid();
 %>
 	<tr>
 	   <td><a href="Form.jsp?f=<% out.println(f.getUri()); %>"><% out.println(f.getFormTitle()); %></a></td>
 	   <td><% out.println(f.getDescription()); %></td>
 	   <td><span class="label label-info label-mini"><% out.println(approval); %></span></td>
 	   <td>
-	   	  <a href="users.jsp?u=<% out.println(userid); %>">
-		       <jsp:include page="/includes/getUser.jsp">
-		   		<jsp:param value="${userid} " name="userid"/>
-		   		<jsp:param value="browse" name="oper"/>
-		   	   </jsp:include></td>
+	   	  <a href="users.jsp?u=<% out.print(uid); %>">
+	   	  <%
+		   	String header = "/includes/getUser.jsp?uid="+uid+"&oper=browse";
+		  	pageContext.include(header);
+	   	  %>
 	   	   </a>
 	   <td>
 	   	<%
@@ -53,9 +53,10 @@
 	    	<%
 	    		String appBtn = null;
 	    		if(!f.getIsActive())
-	    	    	appBtn = "<button class='btn btn-xs btn-success' onclick=\"approveForm('"+f.getUri()+"'\")>Approve</button>";
+	    	    	appBtn = "<a class='btn btn-xs btn-success' onclick=\"approveForm('"+f.getUri()+"'\")>Approve</a>";
 	    	   	out.println(appBtn);
 	    	%>
+	    	<a class="btn btn-xs btn-info" href="FormData.jsp?q=<% out.print(f.getUri()); %>">View Data</a>
 	    </td>
 	</tr>
 <% } %>

@@ -93,8 +93,8 @@
                 </a>
                 <ul class="sub">
                     <li><a href="createForm.jsp">Create New</a></li>
-                    <li><a href="general.html">Browse</a></li>
-                    <li><a href="buttons.html">Pending
+                    <li><a href="browse.jsp">Browse</a></li>
+                    <li><a href="pending.jsp">Pending
                     	<span class="badge bg-success"><% out.println(HeaderDetails.newReqCount); %></span>
                     	</a></li>
                 </ul>
@@ -105,9 +105,10 @@
                     <span>Organization</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="#">New Users</a></li>
-                    <li><a href="#">Manage Users</a></li>
-                    <li><a href="#">Settings</a></li>
+                    <li><a href="organization.jsp">Orgnization Page</a></li>
+                    <li><a href="newUser.jsp">New Users</a></li>
+                    <li><a href="manageUsers.jsp">Manage Users</a></li>
+                    <li><a href="orgSettings.jsp">Settings</a></li>
                 </ul>
             </li>
         </ul></div>        

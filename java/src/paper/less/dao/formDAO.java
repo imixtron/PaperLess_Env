@@ -42,8 +42,8 @@ public class formDAO {
 		if(true){
 			Form frm = new Form();
 			
-			createTable(frm.getUri(), controls);
 			frm.setUri(getPublicUri());
+			createTable(frm.getUri(), controls);
 			frm.setDelete(getQueries("delete",frm.getUri(),controls));
 			frm.setDescription(Desc);
 			frm.setEntryCount(0);
@@ -56,9 +56,8 @@ public class formDAO {
 			frm.setThreshold(thr);
 			frm.setUserid(userid);
 			
-			
-			String Query = "INSERT INTO `forms`(`formid`,`title`,`jsonarr`,`insert`,`delete`,`select`,`isActive`,`publicuri`)"+
-							"VALUES (null,'"+frm.getFormTitle()+"','"+frm.getJsonArr()+"','"+frm.getinsert()+"','"+frm.getDelete()+"',null,'"+frm.getIsActive()+"','"+frm.getUri()+"');";
+			String Query = "INSERT INTO `paperless`.`forms` (`formid`, `title`, `jsonarr`, `description`, `insert`, `delete`, `select`, `isActive`, `publicuri`, `orgid`, `userid`, `threshold`)"+
+					"VALUES (null, '"+frm.getFormTitle()+"', '"+frm.getJsonArr()+"', '"+frm.getDescription()+"', '"+frm.getinsert()+"', '"+frm.getDelete()+"', '"+frm.getSelect()+"', "+frm.getIsActive()+", '"+frm.getUri()+"', "+frm.getOrgid()+", "+frm.getUserid()+", "+frm.getThreshold()+");";
 			System.out.println(Query);
 			PreparedStatement pstmt;
 			try {
@@ -77,32 +76,30 @@ public class formDAO {
 
 	private static boolean createTable(String title, List<Controls> controls) {
 		int i = 0;
-		String Query = "CREATE TABLE "+title+" (id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, ";
+		String Query = "CREATE TABLE "+title+" (";
 		for (Iterator<Controls> iterator = controls.iterator(); iterator.hasNext();) {
 			Controls c = (Controls) iterator.next();
-			Query += c.get_uid();
 			switch(c.getDataType()){
+				case "date":
+					Query += c.get_uid()+" date,";
+					i = 1;
+					break;
 				case "radio":
 				case "checkbox":
-					Query += " int(1)";
-					break;
-				case "date":
-					Query += " date";
-					break;
 				case "text":
 				case "email":
 				case "number":
+					Query += c.get_uid()+" VARCHAR(250),";
+					i = 1;
+					break;
 				case "Default":
-					Query += " VARCHAR(250)";
 					break;
 			}
-			if(c.isRequired()){
-				Query += " NOT NULL";
-			}
-			if (iterator.hasNext())
-				Query += ", ";
+//			if(c.isRequired()){
+//				Query += " NOT NULL";
+//			}
 		}
-		Query+=")";
+		Query+=" id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY)";
 		System.out.println(Query);
 		
 		Statement stmt = null;

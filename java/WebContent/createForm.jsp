@@ -33,8 +33,8 @@
     <![endif]-->
   </head>
   <script type="text/javascript">
-	userid = <% session.getAttribute("userid");%>
-  	org = <% session.getAttribute("userid");%>
+	userid = '<% out.print(session.getAttribute("userid").toString());%>'
+  	org = '<% out.print(session.getAttribute("userid").toString());%>'
   </script>
 
   <body class="full-width" onload="pprlsInit()">
