@@ -2,7 +2,7 @@
 <%@page import="java.util.List"%>
 <%@page import="paper.less.dao.formDAO"%>
 <%
-	List<Form> forms = formDAO.getAllForms(session.getAttribute("orgid").toString(),session.getAttribute("role").toString());
+	List<Form> forms = formDAO.getPendingForms(session.getAttribute("orgid").toString(),session.getAttribute("role").toString());
 %>
 <thead>
 	<tr>

@@ -972,6 +972,7 @@ formOper = {
 		}).success(function(responseText){
 			console.log("Success: Form Created");
 			console.log(responseText);
+			location.href="formSubmitted.jsp";
 		});
 		
 	},

@@ -5,11 +5,28 @@
 <%
 	String tblName = request.getParameter("tblName");
 	List<List<String>> rows = FormDataDAO.fetchData(tblName);
-	List<Integer> id = FormDataDAO.id;
+	List<String> id = FormDataDAO.id;
 	Iterator idIt = id.iterator();
 %>
 
 <table class="table table-hover general-table">
+<thead>
+	<tr>
+		<td></td>
+<%
+	for(Iterator<String> idit = id.iterator();idit.hasNext();) {
+%>
+		<td>
+			<%
+				String st = idit.next();
+				out.print(st); 
+			%>
+		</td>	
+<%
+	}
+%>
+	</tr>
+</thead>
 <% 
 	for(Iterator<List<String>> it = rows.iterator();it.hasNext();) {
 	List<String> col = it.next();

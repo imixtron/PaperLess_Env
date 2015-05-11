@@ -49,17 +49,6 @@
 	        	</div>
 	        </div>
 	    </td>
-	    <td>
-	    	<%
-	    		String appBtn = null;
-	    		if(!f.getIsActive())
-	    	    	appBtn = "<a class='btn btn-xs btn-success' onclick=\"approveForm('"+f.getUri()+"')\")>Approve</a>";
-    	    	else if(f.getIsActive())
-	    	    	appBtn = "<a class='btn btn-xs btn-default default'>Approve</a>";
-	    	   	out.println(appBtn);
-	    	%>
-	    	<a class="btn btn-xs btn-info" href="FormData.jsp?q=<% out.print(f.getUri()); %>">View Data</a>
-	    </td>
 	</tr>
 <% } %>
 </tbody>

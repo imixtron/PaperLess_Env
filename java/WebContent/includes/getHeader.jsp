@@ -4,6 +4,7 @@
 	session.setAttribute("userid", "1");
 	session.setAttribute("role", "admin");
 	session.setAttribute("orgid", "1");
+	session.setAttribute("orguri", "YfyRM5A");
 	session.setAttribute("name", "Imad Ali");
 
 	String p = request.getParameter("q");

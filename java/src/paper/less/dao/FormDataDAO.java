@@ -19,9 +19,9 @@ import paper.less.data.Database;
 
 public class FormDataDAO {
 
-	public static List<Integer> id = new ArrayList<Integer>();
+	public static List<String> id = new ArrayList<String>();
 	public static List<List<String>> fetchData(String tblName) {
-		id = new ArrayList<Integer>();
+		id = new ArrayList<String>();
 
 		String Query = "SELECT * FROM `paperless_formdata`.`"+tblName+"`";
 		PreparedStatement pstmt;
@@ -30,7 +30,7 @@ public class FormDataDAO {
 		try {
 			pstmt = Database.getConnection().prepareStatement(Query);
 			ResultSet rs = pstmt.executeQuery();
-
+			int i = 0;
 			while (rs.next()) {
 				List<String> datum = new ArrayList<String>();
 				for(Iterator<Controls> it = c.iterator();it.hasNext();){
@@ -41,15 +41,22 @@ public class FormDataDAO {
 					else
 						d = rs.getString(cltr.get_uid());
 					datum.add(d);
+					if(i<=0){
+						id.add(cltr.getLabel());
+					}
 				}
-				id.add(rs.getInt("id"));
+				i++;
 				data.add(datum);
 			}
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		getColNames();
 		return data;
+	}
+	public static void getColNames() {
+		
 	}
 	public static Boolean deleteEntry(String id, String tblName) {
 		String Query = "DELETE FROM `paperless_formdata`.`"+tblName+"` WHERE id="+id;

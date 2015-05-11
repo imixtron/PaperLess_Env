@@ -58,10 +58,13 @@ public class formDAO {
 			
 			String Query = "INSERT INTO `paperless`.`forms` (`formid`, `title`, `jsonarr`, `description`, `insert`, `delete`, `select`, `isActive`, `publicuri`, `orgid`, `userid`, `threshold`)"+
 					"VALUES (null, '"+frm.getFormTitle()+"', '"+frm.getJsonArr()+"', '"+frm.getDescription()+"', '"+frm.getinsert()+"', '"+frm.getDelete()+"', '"+frm.getSelect()+"', "+frm.getIsActive()+", '"+frm.getUri()+"', "+frm.getOrgid()+", "+frm.getUserid()+", "+frm.getThreshold()+");";
+			String Query2 = "UPDATE `paperless`.`organization` SET formsCount = formsCount+1 WHERE `orgid` = "+frm.getOrgid()+";";
 			System.out.println(Query);
 			PreparedStatement pstmt;
 			try {
 				pstmt = Database.getConnection().prepareStatement(Query);
+				pstmt.executeUpdate();
+				pstmt = Database.getConnection().prepareStatement(Query2);
 				pstmt.executeUpdate();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -246,6 +249,22 @@ public class formDAO {
 		}
 		return forms;		
 	}
+	public static List<Form> getPendingForms(String orgid,String role) {
+		List<Form> forms = new ArrayList<Form>();
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT * FROM forms WHERE isActive=false";
+		try {
+			stmt = Database.getConnection().createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				forms.add(createFormOb(rs));
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		return forms;		
+	}
 	private static Form createFormOb(ResultSet rs) throws SQLException {
 		Form frm = new Form();
 		
@@ -279,5 +298,16 @@ public class formDAO {
 			e.printStackTrace();
 		}
 		return count;
+	}
+	public static Boolean approveForm(String uri) {
+		Statement stmt = null;
+		String sql = "UPDATE `paperless`.`forms` SET `isActive` = true WHERE publicuri='"+uri+"'";
+		try {
+			stmt = Database.getConnection().createStatement();
+			stmt.executeUpdate(sql);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 }
