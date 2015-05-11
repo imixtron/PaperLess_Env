@@ -14,13 +14,14 @@
             <div class="col-sm-12">
                 <section class="panel">
                     <header class="panel-heading" id="Title">
-                        <div class="pull-right">
-                        	<button class="btn-primary btn-sm btn" id="frmSub" onclick="">Submit</button>
-                        </div>
-                    	<h3 id="frmTitle"></h3>
+                    	
                     </header>
-                    <div class="panel-body" id="pprlsForm">
-                        
+                    <div class="panel-body">
+                    	<%
+                    		String tblName = request.getParameter("q"), 
+                    		link = "/includes/"+session.getAttribute("role").toString()+"/getData.jsp?tblName="+tblName;
+                    		pageContext.include(link);
+                    	%>
                     </div>
                 </section>
             </div>
@@ -55,6 +56,18 @@
 <script src="js/scripts.js"></script>
 <script src="js/custom/auth.js"></script>
 <script src="js/custom/FormBuilder.js"></script>
-
+<script>
+delEntry = function(id,t){
+	$.ajax({
+        type: "POST",
+        url: "DataOper",//jsp,servlet,struts action
+        data: {'id': id,'tblname':t},
+        success: function(data,response){
+        	console.log(data);
+        },
+	});
+	location.reload();
+}
+</script>
 </body>
 </html>

@@ -114,7 +114,41 @@ public class formDAO {
 					
 		return true;
 	}
+	public static List<Controls> getControls(String uri){
 
+		String Query="SELECT jsonarr FROM `paperless`.`forms` WHERE publicuri='"+uri+"';", jsonarr=null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			stmt = Database.formDataConn().createStatement();
+			rs = stmt.executeQuery(Query);
+			while(rs.next()){
+				jsonarr = rs.getString("jsonarr");
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}		
+
+		List<Controls> l = initializeControls(jsonarr);
+		List<Controls> controls = new ArrayList<Controls>();
+		for(Iterator<Controls> it = l.iterator(); it.hasNext();){
+			Controls c = it.next();
+			switch(c.getDataType()){
+				case "date":
+				case "radio":
+				case "checkbox":
+				case "text":
+				case "email":
+				case "number":
+					controls.add(c);
+					break;
+				case "Default":
+					break;
+			}
+		}
+		return controls;
+	}
 	private static List<Controls> initializeControls(String json) {
 		Gson gson = new Gson();
 		List<Controls> o = new ArrayList<Controls>();

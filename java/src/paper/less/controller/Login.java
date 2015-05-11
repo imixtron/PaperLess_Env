@@ -57,7 +57,7 @@ public class Login extends HttpServlet {
             userName.setMaxAge(30*60);
             response.addCookie(userName);
             getServletContext().getRequestDispatcher("index.jsp").forward(request, response);
-            //response.sendRedirect("index.jsp");
+            response.getWriter().write("index.jsp");
         }else{
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
             PrintWriter out= response.getWriter();

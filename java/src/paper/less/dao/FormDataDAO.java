@@ -1,18 +1,69 @@
 package paper.less.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
-import com.mysql.jdbc.EscapeTokenizer;
-
+import paper.less.bean.Controls;
 import paper.less.data.Database;
 
 public class FormDataDAO {
+
+	public static List<Integer> id = new ArrayList<Integer>();
+	public static List<List<String>> fetchData(String tblName) {
+		id = new ArrayList<Integer>();
+
+		String Query = "SELECT * FROM `paperless_formdata`.`"+tblName+"`";
+		PreparedStatement pstmt;
+		List<Controls> c = formDAO.getControls(tblName);
+		List<List<String>> data = new ArrayList<List<String>>();
+		try {
+			pstmt = Database.getConnection().prepareStatement(Query);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				List<String> datum = new ArrayList<String>();
+				for(Iterator<Controls> it = c.iterator();it.hasNext();){
+					Controls cltr = it.next();
+					String d = null;
+					if(cltr.getDataType()=="date")
+						d = rs.getDate(cltr.get_uid()).toString();
+					else
+						d = rs.getString(cltr.get_uid());
+					datum.add(d);
+				}
+				id.add(rs.getInt("id"));
+				data.add(datum);
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return data;
+	}
+	public static Boolean deleteEntry(String id, String tblName) {
+		String Query = "DELETE FROM `paperless_formdata`.`"+tblName+"` WHERE id="+id;
+		System.out.println(Query);
+		PreparedStatement pstmt;
+		try {
+			pstmt = Database.getConnection().prepareStatement(Query);
+			pstmt.executeUpdate();
+		} catch (ClassNotFoundException|SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
 	public static Boolean InsertData(String jsonArr, String formId) {
 		String Query = genInsertQuery(jsonArr, formId);
 		System.out.println(Query);
